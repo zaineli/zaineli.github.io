@@ -1,0 +1,39 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# Large / unused source media — the site serves the web-optimized versions,
+# which ARE committed. "Conoid Final.mov" is ~400MB and exceeds GitHub's 100MB
+# per-file limit; track these via Git LFS if you ever need them in the repo.
+/public/conoid/Conoid Final.mov
+/public/conoid/Screencast From 2026-05-06 01-12-51.mp4
+/public/vision-tactical/win.mp4
+/public/vision-tactical/fail.mp4

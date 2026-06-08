@@ -1,0 +1,522 @@
+@import "tailwindcss";
+
+/* Dark mode is attribute-driven (data-theme="dark"), faithful to amanhsn.com */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------ *
+ * THEME TOKENS (static): fonts, radii, easings, semantic color aliases
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Active breakpoints (Tailwind defaults, stated explicitly) */
+  --breakpoint-sm: 40rem; /* 640 */
+  --breakpoint-md: 48rem; /* 768 */
+  --breakpoint-lg: 64rem; /* 1024 */
+
+  /* Font families. Satoshi is the primary workhorse (loaded via Fontshare).
+     Inter / Geist / mono families are injected by next/font as CSS vars on <html>. */
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Radius scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-pill: 999px;
+
+  /* Easings — the signature "smooth" curve is the brand feel */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Semantic color aliases -> resolve to per-theme tokens declared below.
+     These power utilities like text-fg, bg-accent, border-border-default. */
+  --color-fg: var(--text-primary);
+  --color-fg-muted: var(--text-secondary);
+  --color-fg-subtle: var(--text-tertiary);
+  --color-fg-faint: var(--text-quaternary);
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-muted: var(--bg-muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-row: var(--border-row);
+}
+
+/* ------------------------------------------------------------------ *
+ * SEMANTIC TOKENS — light (default) and dark. Verbatim hex from spec.
+ * 8-digit hex = RRGGBBAA (alpha). Dark neutrals are white-with-alpha.
+ * ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-muted: #fafafa;
+
+  --text-primary: #000000db; /* ~86% */
+  --text-secondary: #121212bf; /* ~75% */
+  --text-tertiary: #5a6573; /* slate, darkened for WCAG AA (>=4.5:1 on #fff) */
+  --text-quaternary: #32404f73; /* ~45% slate */
+  --text-strong: #121212cc; /* ~80% */
+  --text-body: #121212;
+  --text-company: #32404f;
+  --text-name: #121221;
+  --text-accent-green: #0a9d4a;
+  --text-accent-red: #ff0004;
+
+  --border-subtle: #32404f26; /* slate ~15% */
+  --border-default: #d9d9de;
+  --border-strong: #d4d4d4;
+  --border-row: #d4d4d4;
+
+  --accent: #0067d6; /* darkened from #0080ff for AA on link/CTA text (>=4.5:1) */
+  --accent-fg: #ffffff;
+
+  --tag-bg: #f6f6f7;
+  --pill-bg: var(--bg);
+  --pill-border: var(--border-default);
+  --pill-bg-active: #f3f3f4;
+
+  --cursor-bg: var(--text-primary);
+  --cursor-fg: var(--bg);
+  --cursor-shadow: 0 2px 12px #0000002e;
+
+  --shadow-card: 0 4px 15px #0000001a;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0a0a0b;
+  --bg-elevated: #131316;
+  --bg-muted: #1a1a1d;
+
+  --text-primary: #ffffffeb; /* ~92% */
+  --text-secondary: #ffffffb8; /* ~72% */
+  --text-tertiary: #ffffff80; /* 50% */
+  --text-quaternary: #ffffff52; /* ~32% */
+  --text-strong: #ffffffd9; /* ~85% */
+  --text-body: #ededed;
+  --text-company: #e2e6eb;
+  --text-name: #f4f4f6;
+  --text-accent-green: #4ade80;
+  --text-accent-red: #ff5a5e;
+
+  --border-subtle: #ffffff14; /* ~8% */
+  --border-default: #ffffff24; /* ~14% */
+  --border-strong: #ffffff38; /* ~22% */
+  --border-row: #ffffff24;
+
+  --accent: #39f; /* = #3399ff */
+  --accent-fg: #0a0a0b;
+
+  --tag-bg: #ffffff0a; /* ~4% */
+  --pill-bg: var(--bg);
+  --pill-border: var(--border-default);
+  --pill-bg-active: #ffffff0f; /* ~6% */
+
+  --cursor-bg: #ffffff;
+  --cursor-fg: #0a0a0b;
+  --cursor-shadow: 0 2px 12px #00000080;
+
+  --shadow-card: 0 4px 20px #00000073;
+}
+
+/* ------------------------------------------------------------------ *
+ * BASE
+ * ------------------------------------------------------------------ */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+  }
+  ::selection {
+    background: var(--text-primary);
+    color: var(--bg);
+  }
+
+  /* Custom inverting cursor — opt-in: CursorFollow sets data-cursor-active after mount.
+     Progressive enhancement: native cursor stays on touch / reduced-motion / no-JS. */
+  html[data-cursor-active="true"] *,
+  html[data-cursor-active="true"] *::before,
+  html[data-cursor-active="true"] *::after {
+    cursor: none !important;
+  }
+  html[data-cursor-active="true"] :where(input, textarea, select, [contenteditable="true"]) {
+    cursor: text !important;
+  }
+  html[data-cursor-active="true"] [data-cursor-native],
+  html[data-cursor-active="true"] [data-cursor-native] * {
+    cursor: crosshair !important;
+  }
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    html[data-cursor-active="true"] *,
+    html[data-cursor-active="true"] *::before,
+    html[data-cursor-active="true"] *::after {
+      cursor: revert !important;
+    }
+  }
+
+  /* Scroll reveal — blocks ship with this and animate to rest on intersect. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 16px));
+    transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Keyboard focus — clean offset halo */
+  :where(a, button, [tabindex]):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text-primary);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * TYPE SCALE — named .t-* roles, transcribed from the design spec.
+ * Sizes/line-heights are literal px on purpose.
+ * ------------------------------------------------------------------ */
+@layer components {
+  .t-nav-wordmark {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.2px;
+    color: var(--text-primary);
+  }
+  .t-nav-link {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20.25px;
+  }
+
+  .t-hero-name {
+    font-family: var(--font-inter);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    color: var(--text-name);
+  }
+  .t-hero-role {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 24px;
+    color: var(--text-strong);
+  }
+  .t-hero-body {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--text-body);
+  }
+
+  .t-h2 {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.2px;
+  }
+  .t-subhead {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 28.8px;
+    letter-spacing: -0.2px;
+  }
+  .t-body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 25.6px;
+    color: var(--text-body);
+  }
+
+  /* Display tier — case-study + section heroes (Satoshi, tight tracking) */
+  .t-display-lg {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+  }
+  .t-display {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+  }
+
+  .t-project-name {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: normal;
+    color: var(--text-primary);
+  }
+  .t-project-body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.473px;
+    color: var(--text-primary);
+  }
+
+  .t-table-label {
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.473px;
+    color: var(--text-secondary);
+  }
+  .t-table-value {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.473px;
+    color: var(--text-primary);
+  }
+
+  .t-exp-year {
+    font-family: var(--font-geist-mono);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 22.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .t-exp-company {
+    font-family: var(--font-geist-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22.5px;
+    color: var(--text-company);
+  }
+  .t-exp-role {
+    font-family: var(--font-geist-sans);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 22.5px;
+    color: var(--text-tertiary);
+  }
+
+  .t-meta {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20.25px;
+  }
+  .t-eyebrow {
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0.47px;
+    text-transform: uppercase;
+  }
+  .t-mono-xs {
+    font-family: var(--font-dm-mono);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 12px;
+    letter-spacing: 2.8px;
+    text-transform: uppercase;
+  }
+  .t-link {
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+  .t-footer-link {
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 14px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .t-footer-body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20.25px;
+    color: var(--text-primary);
+  }
+
+  /* Responsive bumps (md = 768px) */
+  @media (min-width: 48rem) {
+    .t-hero-name { font-size: 20px; letter-spacing: 2.8px; }
+    .t-hero-role { font-size: 18px; line-height: 28.8px; }
+    .t-hero-body { font-size: 20px; line-height: 30px; }
+    .t-display-lg { font-size: 34px; }
+    .t-display { font-size: 30px; }
+    .t-project-name { font-size: 16px; }
+    .t-project-body { font-size: 15.1px; line-height: 20.25px; }
+    .t-table-label { font-size: 15.8px; line-height: 20.25px; }
+    .t-table-value { font-size: 16px; line-height: 20.25px; }
+    .t-exp-year, .t-exp-company, .t-exp-role { font-size: 15px; }
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * CUSTOM CURSOR — the inverting follower dot / label pill.
+ * ------------------------------------------------------------------ */
+.cursor-root {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+  will-change: transform;
+  display: none;
+}
+.cursor-root[data-ready="true"] {
+  display: block;
+}
+.cursor-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: var(--cursor-bg);
+  color: var(--cursor-fg);
+  box-shadow: var(--cursor-shadow);
+  overflow: hidden;
+  transition:
+    width 0.18s var(--ease-smooth),
+    height 0.18s var(--ease-smooth),
+    padding 0.18s var(--ease-smooth),
+    opacity 0.18s var(--ease-smooth);
+}
+.cursor-dot[data-mode="pointer"] {
+  width: 36px;
+  height: 36px;
+  opacity: 0.8;
+}
+.cursor-dot[data-mode="text"] {
+  width: auto;
+  height: 28px;
+  padding: 0 12px;
+}
+.cursor-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease-smooth);
+}
+.cursor-dot[data-mode="text"] .cursor-label {
+  opacity: 1;
+}
+
+/* Sticky nav drops in on first load (spec §5.9 / §6.5). */
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.nav-enter {
+  animation: nav-drop 0.5s var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-enter {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * MICRO-INTERACTIONS — accent underline wipe + hero-media settle.
+ * Compositor-only (transform), zero layout shift, reduced-motion safe.
+ * ------------------------------------------------------------------ */
+@layer components {
+  /* Underline wipes in from the left on hover/focus, out to the right on
+     release. A pseudo-element (not border/text-decoration) => no reflow. */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.24s var(--ease-smooth);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Case-study hero media settles from a hair oversized to rest on reveal,
+     riding the parent Reveal's data-visible flag. */
+  .media-scale-in {
+    transform: scale(1.04);
+    transition: transform 0.6s var(--ease-out);
+  }
+  [data-visible="true"] .media-scale-in {
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link-underline::after {
+      transition: none;
+    }
+    .media-scale-in,
+    [data-visible="true"] .media-scale-in {
+      transform: none;
+      transition: none;
+    }
+  }
+}
