@@ -37,3 +37,8 @@ next-env.d.ts
 /public/conoid/Screencast From 2026-05-06 01-12-51.mp4
 /public/vision-tactical/win.mp4
 /public/vision-tactical/fail.mp4
+# Unused Chatly Make screenshot that carries a third-party "Edit with Lovable" badge.
+/public/omni-agent/generate-webpage2.png
+# Internal architecture spec — kept local as the diagram's source; not deployed publicly
+# (contains internal file paths, tool names, and security patterns).
+/public/omni-agent/architecture.md

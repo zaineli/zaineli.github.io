@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 };
 
 const CURRENTLY = [
-  "Building Chatly's Omni-Agent at Vyro.ai",
-  "Building Conoid — the Internet of Evolving Agents",
+  "Building Chatly Make at Vyro.ai",
+  "Building Conoid, the Internet of Evolving Agents",
   "Finishing my B.Sc. in Computer Science at NUST",
   "Reading the papers behind the systems, then shipping the thing",
 ];
@@ -42,27 +42,27 @@ export default function AboutPage() {
           <Reveal className="md:order-1 max-w-[680px] flex-1" y={12} delay={40}>
             <div className="flex flex-col gap-5">
               <p className="t-body text-fg-muted">
-                I build <span className="text-fg">AI swarms</span> — multi-agent systems and architectures that
-                perceive, decide, and ship on their own. The work I care about starts where a research paper stops
-                and a running system begins, and I like getting there fast.
+                I build <span className="text-fg">AI swarms</span>: multi-agent systems and architectures that
+                perceive, decide, and ship on their own. My work starts where a paper ends and a running system
+                begins. I like getting there fast.
               </p>
               <p className="t-body text-fg-muted">
                 I read the papers, then build the thing. I&apos;ve turned an Alan Turing memory paper into working
-                intuition, broken down DeepSeek V3&apos;s internals, and put a Stanford/Berkeley/Princeton result —
-                that <em>more</em> LLM calls can make things <em>worse</em> — into practice. Then I ship: a reverse
-                proxy from scratch, a distributed crawler on AWS, a real-time pipeline on Kafka and Spark, agents
-                that play a 3D game with nothing but a vision model and a plan.
+                intuition, broken down DeepSeek V3&apos;s internals, and put a Stanford/Berkeley/Princeton result
+                into practice: that <em>more</em> LLM calls can make things <em>worse</em>. Then I ship. A reverse
+                proxy from scratch. A distributed crawler on AWS. A real-time pipeline on Kafka and Spark. Agents
+                that play a 3D game on nothing but a vision model and a plan.
               </p>
               <p className="t-body text-fg-muted">
-                Right now: <span className="text-fg">Omni-Agent</span> at Chatly (Vyro.ai), and{" "}
-                <span className="text-fg">Conoid</span> — the Internet of Evolving Agents, where agents accumulate
+                Right now: <span className="text-fg">Chatly Make</span> at Vyro.ai, and{" "}
+                <span className="text-fg">Conoid</span>, the Internet of Evolving Agents, where agents accumulate
                 reputation, memory, and trust across tasks. Before that: agentic systems at Victreat, and
-                facial-recognition research at MachVIS, where I helped build <span className="text-fg">TVFace</span> —
+                facial-recognition research at MachVIS, where I helped build <span className="text-fg">TVFace</span>,
                 a 2.6M-image dataset published in Springer&apos;s Pattern Analysis and Applications.
               </p>
               <p className="t-body text-fg-muted">
-                Maths when it matters, distributed systems when it has to scale, and a strong bias toward making
-                things real — quickly.
+                Maths when it matters. Distributed systems when it has to scale. A bias toward making things
+                real, fast.
               </p>
             </div>
 

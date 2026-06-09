@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import CaseStudyView from "@/components/CaseStudyView";
+import ChatlyMakeArchitecture from "@/components/ChatlyMakeArchitecture";
 import { caseStudies } from "@/lib/content";
 
-const study = caseStudies["omni-agent"];
+const study = caseStudies["chatly-make"];
 
 export const metadata: Metadata = {
   title: study.title,
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <CaseStudyView study={study} />;
+  return <CaseStudyView study={study} topSlot={<ChatlyMakeArchitecture />} />;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { CaseStudy, CaseSection } from "@/lib/content";
 import MetaTable, { type MetaRow } from "./MetaTable";
 import ProjectVisual from "./ProjectVisual";
@@ -7,7 +8,7 @@ import Reveal from "./Reveal";
 import ScrollProgress from "./ScrollProgress";
 import { ArrowUpRight, ArrowRight } from "./icons";
 
-export default function CaseStudyView({ study }: { study: CaseStudy }) {
+export default function CaseStudyView({ study, topSlot }: { study: CaseStudy; topSlot?: ReactNode }) {
   const rows: MetaRow[] = [
     { label: "Year", value: study.year },
     { label: "Role", value: study.role },
@@ -58,7 +59,7 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
               <p className="t-meta text-fg-muted">
                 <span className="text-fg">Draft.</span> Placeholders marked{" "}
                 <code className="font-[family-name:var(--font-dm-mono)] text-[var(--accent)]">[[…]]</code> need your
-                input — real metrics, screenshots, and the specifics only you know.
+                input. Real metrics, screenshots, and the specifics only you know.
               </p>
             </div>
           )}
@@ -89,6 +90,13 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
           </div>
         </div>
       </header>
+
+      {/* Optional top slot — e.g. a full-width architecture diagram */}
+      {topSlot && (
+        <div className="w-full px-5 sm:px-8 lg:px-[80px]">
+          <div className="mx-auto max-w-[1280px]">{topSlot}</div>
+        </div>
+      )}
 
       {/* Sections */}
       <div className="w-full px-5 sm:px-8 lg:px-[80px]">

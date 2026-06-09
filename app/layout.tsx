@@ -14,12 +14,12 @@ const dmMono = DM_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "
 export const metadata: Metadata = {
   metadataBase: new URL("https://zaineli.com"),
   title: {
-    default: "Zain Ali — Product Engineer",
+    default: "Zain Ali · Product Engineer",
     template: "%s · Zain Ali",
   },
   description: profile.metaDescription,
   openGraph: {
-    title: "Zain Ali — Product Engineer",
+    title: "Zain Ali · Product Engineer",
     description: profile.metaDescription,
     type: "website",
   },

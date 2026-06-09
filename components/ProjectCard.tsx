@@ -79,7 +79,7 @@ export default function ProjectCard({ project, index }: { project: P; index: num
           href={project.href}
           target="_blank"
           rel="noopener noreferrer"
-          data-cursor-text={`${cursorText} — ${project.name}`}
+          data-cursor-text={`${cursorText} · ${project.name}`}
           className={`${imageCardClass} md:flex-1`}
           style={{ boxShadow: "var(--shadow-card)" }}
         >
@@ -88,7 +88,7 @@ export default function ProjectCard({ project, index }: { project: P; index: num
       ) : (
         <Link
           href={project.href}
-          data-cursor-text={`${cursorText} — ${project.name}`}
+          data-cursor-text={`${cursorText} · ${project.name}`}
           className={`${imageCardClass} md:flex-1`}
           style={{ boxShadow: "var(--shadow-card)" }}
         >
