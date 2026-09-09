@@ -8,7 +8,7 @@ export default function NotFound() {
         <p className="t-mono-xs text-fg-subtle">404</p>
         <h1 className="t-display-lg mt-3">This page wandered off.</h1>
         <p className="t-body mt-4 max-w-[480px] text-fg-muted">
-          The link you followed doesn&apos;t exist — or not yet.
+          The link you followed doesn&apos;t exist. Or not yet.
         </p>
         <Link
           href="/"
