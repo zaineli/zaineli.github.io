@@ -1,39 +1,47 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-import { Inter, DM_Mono } from "next/font/google";
+import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { profile } from "@/lib/content";
-import CursorFollow from "@/components/CursorFollow";
+import { metaDescription, profile } from "@/lib/content";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-inter", display: "swap" });
-const dmMono = DM_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-dm-mono", display: "swap" });
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
+  display: "swap",
+});
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-instrument",
+  display: "swap",
+});
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+const title = `${profile.name} · ${profile.role}, ${profile.company}`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zaineli.com"),
-  title: {
-    default: "Zain Ali · Product Engineer",
-    template: "%s · Zain Ali",
-  },
-  description: profile.metaDescription,
-  openGraph: {
-    title: "Zain Ali · Product Engineer",
-    description: profile.metaDescription,
-    type: "website",
-  },
-  twitter: { card: "summary_large_image" },
+  metadataBase: new URL("https://zainn.me"),
+  title: { default: title, template: `%s · ${profile.name}` },
+  description: metaDescription,
+  openGraph: { title, description: metaDescription, type: "website" },
+  twitter: { card: "summary_large_image", title, description: metaDescription },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
+    { media: "(prefers-color-scheme: light)", color: "#fcfbf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0e0d" },
   ],
 };
 
-// No-FOUC theme bootstrap: set data-theme before paint from localStorage / system.
+// Set data-theme before first paint so the page never flashes the wrong theme.
 const themeScript = `(function(){try{var t=localStorage.getItem('theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -41,27 +49,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} ${inter.variable} ${dmMono.variable}`}
+      className={`${inter.variable} ${instrument.variable} ${jetbrains.variable}`}
     >
       <head>
-        <link rel="preconnect" href="https://api.fontshare.com" />
-        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="anonymous" />
-        <link
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
-          rel="stylesheet"
-        />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {/* No-JS fallback: scroll-reveal blocks ship hidden, so reveal them when JS is off. */}
+        {/* Scroll-reveal blocks ship hidden; show them when JS is unavailable. */}
         <noscript>
           <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
         </noscript>
       </head>
       <body>
-        <CursorFollow />
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-bg-elevated focus:px-3 focus:py-2 focus:text-sm"
+        >
+          Skip to content
+        </a>
         <Nav />
-        <main className="flex w-full flex-col items-center gap-[64px] pb-[64px] pt-[32px] md:gap-[96px] md:pb-[96px] md:pt-[64px]">
-          {children}
-        </main>
+        <main id="main">{children}</main>
         <Footer />
       </body>
     </html>
