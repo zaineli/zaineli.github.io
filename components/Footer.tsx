@@ -1,34 +1,40 @@
-import { profile } from "@/lib/content";
-
-const FOOTER_LINKS = [
-  profile.socials.github,
-  profile.socials.linkedin,
-  profile.socials.cv,
-  profile.socials.email,
-];
+import { education, links, profile } from "@/lib/content";
 
 export default function Footer() {
   return (
-    <footer className="w-full">
-      <div className="mx-auto flex w-full max-w-[1441px] flex-col items-start gap-6 border-t border-border-subtle px-5 py-10 sm:px-8 md:flex-row md:items-end md:justify-between md:px-[80px] md:py-[64px] lg:px-[104.5px]">
-        <p className="t-footer-body">
-          Designed &amp; developed with <span aria-label="love">❤️</span> by @{profile.wordmark}
+    <footer
+      id="contact"
+      className="mt-24 border-t border-border-subtle md:mt-32"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
+      <div className="mx-auto w-full max-w-[1100px] px-5 py-12 sm:px-8 md:py-16">
+        <h2 className="t-eyebrow">Contact</h2>
+        <p className="t-lead mt-5 max-w-[46ch]">
+          Open to conversations about reinforcement learning, agent memory, and inference
+          systems — research collaborations included.
         </p>
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 md:gap-x-[32px]">
-          {FOOTER_LINKS.map((l) => (
+
+        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+          {links.map((l) => (
             <a
-              key={l.label}
+              key={l.href}
               href={l.href}
-              target={l.href.startsWith("mailto:") ? undefined : "_blank"}
-              rel="noopener noreferrer"
-              data-cursor="pointer"
-              data-cursor-text={l.cursor}
-              className="t-footer-link link-underline"
+              className="link text-[14px]"
+              {...(l.external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
             >
               {l.label}
+              {l.external ? " ↗" : ""}
             </a>
           ))}
-        </nav>
+        </div>
+
+        <div className="mt-12 flex flex-col gap-2 border-t border-border-subtle pt-6 sm:flex-row sm:items-baseline sm:justify-between">
+          <p className="t-mono">
+            {education.degree} · {education.school.split("(")[1]?.replace(")", "") ?? education.school} ·{" "}
+            {education.period}
+          </p>
+          <p className="t-mono">© {new Date().getFullYear()} {profile.name}</p>
+        </div>
       </div>
     </footer>
   );

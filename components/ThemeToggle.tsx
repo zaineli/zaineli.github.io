@@ -36,9 +36,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      data-cursor="pointer"
-      data-cursor-text={isDark ? "Light mode" : "Dark mode"}
-      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-pill)] border border-transparent text-fg-subtle transition-[color,background-color,border-color] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-border-default hover:bg-[var(--pill-bg-active)] hover:text-fg"
+      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-pill)] border border-transparent text-fg-subtle transition-colors duration-150 hover:border-border-default hover:text-fg"
     >
       {/* Render a stable icon pre-mount to avoid hydration mismatch */}
       {mounted && isDark ? <SunIcon /> : <MoonIcon />}

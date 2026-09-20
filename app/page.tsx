@@ -1,43 +1,38 @@
 import Hero from "@/components/Hero";
-import Reveal from "@/components/Reveal";
-import ExperienceTimeline from "@/components/ExperienceTimeline";
-import SocialRow from "@/components/SocialRow";
-import ProjectCard from "@/components/ProjectCard";
-import { projects } from "@/lib/content";
+import Section from "@/components/Section";
+import Interests from "@/components/Interests";
+import Experience from "@/components/Experience";
+import Systems from "@/components/Systems";
+import Publications from "@/components/Publications";
 
 export default function Home() {
   return (
     <>
       <Hero />
 
-      {/* Experience */}
-      <section className="w-full px-5 sm:px-8 lg:px-[80px]">
-        <div className="mx-auto max-w-[1280px]">
-          <Reveal y={12}>
-            <h2 className="t-eyebrow text-fg-subtle">Experience</h2>
-            <div className="mt-5">
-              <ExperienceTimeline />
-            </div>
-            <SocialRow />
-          </Reveal>
-        </div>
-      </section>
+      <Section
+        id="research"
+        eyebrow="Research interests"
+        intro="Four threads, all pointed at the same problem: an agent that does not get better with use is a demo, not a system."
+      >
+        <Interests />
+      </Section>
 
-      {/* Selected Work */}
-      <section id="work" className="w-full scroll-mt-24 px-5 sm:px-8 lg:px-[80px]">
-        <div className="mx-auto max-w-[1280px]">
-          <Reveal>
-            <h2 className="t-eyebrow text-fg-subtle">Selected Work</h2>
-          </Reveal>
-          <div className="mt-8 flex flex-col gap-[64px] md:mt-12 md:gap-[96px]">
-            {projects.map((p, i) => (
-              <Reveal key={p.slug}>
-                <ProjectCard project={p} index={i} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Section id="experience" eyebrow="Experience">
+        <Experience />
+      </Section>
+
+      <Section
+        id="systems"
+        eyebrow="Systems"
+        intro="Built from scratch, benchmarked against the baselines they claim to beat, and written up with the negative results included. Every number links to the script that produced it."
+      >
+        <Systems />
+      </Section>
+
+      <Section id="publications" eyebrow="Publications">
+        <Publications />
+      </Section>
     </>
   );
 }
