@@ -258,6 +258,111 @@ export const systems: System[] = [
     ],
   },
   {
+    slug: "reverie",
+    name: "reverie",
+    tagline: "A discrete latent world model with planning, and why it does not work yet",
+    year: "2026",
+    abstract:
+      "A VQ-VAE encoder, a transformer dynamics model over discrete latents, and cross-entropy-method planning inside it \u2014 on a gridworld built to require a model rather than a reactive policy. The headline result is negative, and is reported that way: planning closes only 13.4% of the gap between random and an oracle planner running on the true simulator. The architecture is structured so that \u201cthe model is inaccurate\u201d and \u201cthe planner is weak\u201d are separately measurable, and they have a definite answer.",
+    metrics: [
+      { label: "random \u2192 oracle gap closed", value: "13.4%", emphasis: true },
+      { label: "rollout fidelity, 1 \u2192 12 steps", value: "0.635 \u2192 0.530 F1" },
+      { label: "hypotheses tested / refuted", value: "2 / 2" },
+    ],
+    repo: "https://github.com/zaineli/reverie",
+    tags: ["World models", "RL", "Planning", "PyTorch"],
+    sections: [
+      {
+        heading: "The environment is the experiment",
+        paragraphs: [
+          "A world model only earns its cost when the task defeats the alternatives, so Tunnels is built around three properties. A 7\u00d77 egocentric window on a 12\u00d712 grid, so a reactive policy is insufficient rather than merely worse. Reward gated behind a key and a door, so a random policy solves 0.0% of episodes. Hazards that random-walk, which punish a deterministic model and make rollout fidelity worth measuring at all.",
+          "The simulator runs at 80,000 steps per second on one core. That is deliberate: the bottleneck should be the model, not the environment.",
+        ],
+      },
+      {
+        heading: "The model learns everything it is asked to",
+        table: {
+          head: ["quantity", "value"],
+          rows: [
+            ["encoder occupancy F1", "0.922"],
+            ["codebook usage / perplexity", "98% / 144 of 256"],
+            ["next-code accuracy", "0.893"],
+            ["reward MSE", "0.0007"],
+            ["termination recall / precision", "1.000 / 1.000"],
+          ],
+        },
+        paragraphs: [
+          "Every head converges. Nothing in this table suggests a problem, which is exactly why the rollout measurement had to exist.",
+        ],
+      },
+      {
+        heading: "And imagined rollouts still degrade",
+        table: {
+          head: ["horizon", "1", "2", "4", "6", "8", "10", "12"],
+          rows: [
+            ["F1 (argmax)", "0.635", "0.694", "0.642", "0.599", "0.589", "0.534", "0.530"],
+            ["F1 (sampled)", "0.618", "0.652", "0.600", "0.591", "0.543", "0.500", "0.448"],
+          ],
+          caption:
+            "Decoded occupancy F1 against the true simulator under identical action sequences.",
+        },
+        paragraphs: [
+          "The encoder\u2019s own reconstruction ceiling is 0.922, so one-step prediction already gives up roughly 0.27 of the available fidelity and the rest erodes with horizon. Reward MAE stays at 0.02\u20130.10 and termination agreement at 0.91\u20131.00 \u2014 the scalar heads are fine. It is state prediction that fails.",
+        ],
+      },
+      {
+        heading: "Attributing the gap with an oracle",
+        table: {
+          head: ["policy", "return", "solve rate", "s/episode"],
+          rows: [
+            ["random", "\u22121.444", "0.000", "\u2014"],
+            ["learned-model MPC", "\u22121.306", "0.000", "11.4"],
+            ["oracle MPC (true simulator)", "\u22120.411", "0.100", "7.9"],
+          ],
+        },
+        paragraphs: [
+          "Planning barely beats random, which admits two readings with opposite fixes: the model is too inaccurate, or CEM at this budget cannot solve the task even with a perfect model. The oracle settles it \u2014 the same CEM loop run against the real environment through clone/restore. It is not a deployable method; it is an upper bound on the search.",
+          "The oracle reaches a 10% solve rate where random reaches 0%, so the search is capable of something. The learned model closes 13.4% of that gap. The shortfall is model fidelity, and the rollout curve says so independently. Structuring the system so this question had a clean answer is the part worth keeping \u2014 a single end-to-end objective would have produced the same poor return with no way to attribute it.",
+        ],
+      },
+      {
+        heading: "Two hypotheses, both refuted",
+        list: [
+          {
+            term: "Sampling imagined futures should beat argmax",
+            detail:
+              "The standard argument for categorical latents: a discrete distribution can represent \u201cleft or right, equally likely\u201d, where a regression to the mean gives a state that never occurs. Measured, argmax wins at nearly every horizon \u2014 mean F1 0.604 against 0.553. The argument assumes a calibrated model; at 0.62 one-step fidelity the spread is dominated by model error rather than environment stochasticity, so sampling adds noise on top of error.",
+          },
+          {
+            term: "The parallel-token shortcut is the cause",
+            detail:
+              "The dynamics head predicts a frame\u2019s 16 codes simultaneously, treating them as conditionally independent \u2014 which would explain incoherent samples. So I implemented autoregressive within-frame generation, drawing from the joint. It is worse (0.538 vs 0.553 sampled, 0.562 vs 0.604 argmax) and 6\u00d7 slower, and argmax still beats sampling after the assumption is removed. Independence was not the cause. Kept behind a default-off flag, because the hypothesis is worth retesting at higher fidelity.",
+          },
+        ],
+      },
+      {
+        heading: "Three bugs worth recording",
+        list: [
+          {
+            term: "The model never saw a termination",
+            detail:
+              "The replay sampler rejected any window containing a terminal step \u2014 the safe-looking choice, since windows must not span a reset. Termination recall sat at exactly 0.000 through 3,000 training steps while code accuracy climbed to 0.95: a model that predicted the world accurately and did not know episodes could end. Windows may now end on a termination, the code loss is masked there, and 25% of each batch is forced terminal because the natural rate is 1.6%.",
+          },
+          {
+            term: "Unweighted BCE on a 1.6% positive class",
+            detail:
+              "Even with terminal windows sampled, the termination head predicted \u201calive\u201d unconditionally: 98.4% accuracy, zero recall. pos_weight is now 20 \u2014 deliberately short of the balanced 60, because over-correcting makes the planner see hazards everywhere and freeze.",
+          },
+          {
+            term: "Cell accuracy as a reconstruction metric",
+            detail:
+              "Observations are ~92% empty, so predicting nothing scores 0.92 and the metric barely moves during training. The first encoder looked like it was at 98% when its occupancy F1 was 0.44. Everything is now reported as F1, where the empty baseline is 0.0.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     slug: "spindle",
     name: "spindle",
     tagline: "A paged-attention inference engine with continuous batching and speculative decoding",
