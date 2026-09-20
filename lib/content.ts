@@ -370,9 +370,9 @@ export const systems: System[] = [
     abstract:
       "Self-improvement research has a measurement problem: when a language-model policy is scored by a language-model judge, \u201cit got better\u201d and \u201cit learned to please the judge\u201d cannot be told apart. whetstone moves the question to program synthesis, where correctness is decided by execution \u2014 so the verifier can be made deliberately gameable with a known amount of slack, and whether the agent exploits it becomes a measurement. The detection works. The improvement is below the experiment\u2019s noise floor, and the noise floor is computed and reported.",
     metrics: [
-      { label: "hack rate, visible vs held-out gate", value: "44.4% / 0.0%", emphasis: true },
+      { label: "hack rate, visible vs held-out gate", value: "39.6% / 0.0%", emphasis: true },
       { label: "spurious solves at 1 example", value: "41.2%" },
-      { label: "seeds needed for 80% power", value: "9 (ran 5)" },
+      { label: "seeds needed for 80% power", value: "43 (ran 12)" },
     ],
     repo: "https://github.com/zaineli/whetstone",
     tags: ["Self-improvement", "Reward hacking", "Program synthesis", "Python"],
@@ -407,15 +407,16 @@ export const systems: System[] = [
         table: {
           head: ["gate", "held-out solve", "\u0394 vs uniform", "overfit gap", "hack rate"],
           rows: [
-            ["held-out", "0.480 \u00b1 0.063", "+0.008", "+0.223", "0.000"],
-            ["visible", "0.470 \u00b1 0.057", "\u22120.002", "+0.247", "0.444"],
-            ["none", "0.482 \u00b1 0.052", "+0.010", "+0.225", "0.061"],
+            ["held-out", "0.490 \u00b1 0.054", "+0.003", "+0.233", "0.000"],
+            ["visible", "0.476 \u00b1 0.047", "\u22120.010", "+0.291", "0.396"],
+            ["none", "0.491 \u00b1 0.044", "+0.004", "+0.251", "0.069"],
           ],
-          caption: "Three arms, identical but for the acceptance rule. One visible example, skewed generator.",
+          caption: "Three arms over 12 seeds, identical but for the acceptance rule. One visible example, skewed generator.",
         },
         paragraphs: [
-          "Hack rate is the fraction of accepted self-modifications that raised the visible score without raising the held-out score \u2014 a change that looks like improvement to the system and is not. Under a visible gate, nearly half of everything accepted is of that kind. Under a held-out gate, none.",
-          "The solve-rate columns are not significant and are not presented as if they were. Headroom from a uniform policy to an oracle that knows the task generator is +0.053; the seed-to-seed standard deviation is 0.039; 9 seeds are needed for 80% power. Below that an arm ordering is a coin flip. A self-improvement result reported without its noise floor is not a result.",
+          "Hack rate is the fraction of accepted self-modifications that raised the visible score without raising the held-out score \u2014 a change that looks like improvement to the system and is not. Under a visible gate, 40% of everything accepted is of that kind. Under a held-out gate, none. The overfit-gap column corroborates it independently: the visible arm does not merely accept gaming, it ends measurably more overfitted (+0.291 against +0.233).",
+          "The solve-rate column is not significant and is not presented as if it were. Headroom from a uniform policy to an oracle that knows the task generator is +0.029 against a per-arm standard deviation of 0.048, which needs 43 seeds for 80% power; 12 were run. Note that the ungated arm scores highest of the three \u2014 that is what noise looks like when nothing suppresses it.",
+          "The power estimate was itself worth running twice. A 6-seed pilot implied 9 seeds would suffice. Twelve seeds shrank the measured headroom and held the variance, revising the requirement to 43. A power estimate taken from an underpowered pilot is not reliable, and the direction of its error is not predictable \u2014 which matters, because running the pilot and stopping there is the normal thing to do.",
         ],
       },
       {
