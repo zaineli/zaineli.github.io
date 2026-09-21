@@ -53,15 +53,15 @@ export default function Nav() {
       }`}
       style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
     >
-      <div className="mx-auto flex h-14 w-full max-w-[1100px] items-center justify-between px-5 sm:px-8 md:h-16">
+      <div className="mx-auto flex h-14 w-full max-w-[1100px] items-center gap-5 px-5 sm:px-8 md:h-16">
         <Link
           href="/"
-          className="font-serif text-[17px] tracking-[-0.01em] text-fg transition-colors hover:text-accent"
+          className="t-nav shrink-0 text-accent transition-opacity hover:opacity-70"
         >
-          {profile.wordmark}
+          {profile.wordmark.split(" ")[0]}
         </Link>
 
-        <nav className="flex min-w-0 items-center gap-1 sm:gap-2">
+        <nav className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
           {/* Scrollable on narrow screens rather than hidden: the section links
               are the only navigation this site has, so dropping them on mobile
               leaves no way to reach anything but the top. */}
@@ -72,7 +72,7 @@ export default function Nav() {
                 <Link
                   key={s.href}
                   href={s.href}
-                  className={`rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[13px] transition-colors ${
+                  className={`t-nav rounded-[2px] px-2.5 py-1.5 transition-colors ${
                     active === id ? "text-accent" : "text-fg-subtle hover:text-fg"
                   }`}
                 >
