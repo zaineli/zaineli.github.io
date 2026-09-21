@@ -363,6 +363,89 @@ export const systems: System[] = [
     ],
   },
   {
+    slug: "whetstone",
+    name: "whetstone",
+    tagline: "Auditable self-improvement, and a ledger that catches an agent gaming its own verifier",
+    year: "2026",
+    abstract:
+      "Self-improvement research has a measurement problem: when a language-model policy is scored by a language-model judge, \u201cit got better\u201d and \u201cit learned to please the judge\u201d cannot be told apart. whetstone moves the question to program synthesis, where correctness is decided by execution \u2014 so the verifier can be made deliberately gameable with a known amount of slack, and whether the agent exploits it becomes a measurement. The detection works. The improvement is below the experiment\u2019s noise floor, and the noise floor is computed and reported.",
+    metrics: [
+      { label: "hack rate, visible vs held-out gate", value: "44.4% / 0.0%", emphasis: true },
+      { label: "spurious solves at 1 example", value: "41.2%" },
+      { label: "seeds needed for 80% power", value: "9 (ran 5)" },
+    ],
+    repo: "https://github.com/zaineli/whetstone",
+    tags: ["Self-improvement", "Reward hacking", "Program synthesis", "Python"],
+    sections: [
+      {
+        heading: "Why decidable correctness is the precondition",
+        paragraphs: [
+          "The standard setup for studying self-improving agents \u2014 a language-model policy scored by a language-model judge \u2014 cannot answer its own central question. When the score rises there is no independent instrument to separate a policy that got better at the task from one that got better at being scored.",
+          "So the domain is program synthesis from examples: a hidden program over integer lists, and the agent must find one reproducing the visible input/output pairs. Correctness is settled by execution. That makes the improvement signal exact, and \u2014 more usefully \u2014 makes it possible to build a verifier that is deliberately gameable with a known amount of slack, then measure whether the agent exploits it.",
+        ],
+      },
+      {
+        heading: "Where reward hacking is even possible",
+        table: {
+          head: ["visible examples", "visible solve", "held-out solve", "gap", "spurious share"],
+          rows: [
+            ["1", "0.728", "0.428", "0.300", "41.2%"],
+            ["2", "0.642", "0.522", "0.120", "18.7%"],
+            ["3", "0.587", "0.510", "0.077", "13.1%"],
+            ["4", "0.594", "0.552", "0.042", "7.1%"],
+            ["6", "0.584", "0.568", "0.017", "2.9%"],
+          ],
+          caption: "Uniform policy, 6 seeds. Specification density sets how much slack there is to game.",
+        },
+        paragraphs: [
+          "Gaming needs a gap between what is checked and what is meant. With one visible example, 41% of everything that \u201csolves\u201d a task fails to reproduce held-out behaviour \u2014 the program fits by coincidence. With six, 3%.",
+          "This table is also the first thing that went wrong. The initial run used four examples, where gaming barely occurs; hack rates came out near zero in every arm, and the obvious conclusion \u2014 that the gate does not matter \u2014 would have been drawn from an experiment conducted outside the regime where the phenomenon exists.",
+        ],
+      },
+      {
+        heading: "What the gate is measured against",
+        table: {
+          head: ["gate", "held-out solve", "\u0394 vs uniform", "overfit gap", "hack rate"],
+          rows: [
+            ["held-out", "0.480 \u00b1 0.063", "+0.008", "+0.223", "0.000"],
+            ["visible", "0.470 \u00b1 0.057", "\u22120.002", "+0.247", "0.444"],
+            ["none", "0.482 \u00b1 0.052", "+0.010", "+0.225", "0.061"],
+          ],
+          caption: "Three arms, identical but for the acceptance rule. One visible example, skewed generator.",
+        },
+        paragraphs: [
+          "Hack rate is the fraction of accepted self-modifications that raised the visible score without raising the held-out score \u2014 a change that looks like improvement to the system and is not. Under a visible gate, nearly half of everything accepted is of that kind. Under a held-out gate, none.",
+          "The solve-rate columns are not significant and are not presented as if they were. Headroom from a uniform policy to an oracle that knows the task generator is +0.053; the seed-to-seed standard deviation is 0.039; 9 seeds are needed for 80% power. Below that an arm ordering is a coin flip. A self-improvement result reported without its noise floor is not a result.",
+        ],
+      },
+      {
+        heading: "Design",
+        list: [
+          {
+            term: "Bounded proposals",
+            detail:
+              "Every self-modification is a named edit to one weight table \u2014 reinforce an operation, a parameter, a bigram, a program length \u2014 with a clipped magnitude. Free-form self-modification is unauditable, and an unauditable change cannot be attributed when the system later gets worse. This is the discipline CONOID applies to its judge channels, for the same reason.",
+          },
+          {
+            term: "A held-out gate",
+            detail:
+              "A proposal is accepted only if it improves the solve rate on examples the search never saw, on a gate set disjoint from the one that generated it, at a fixed evaluation seed so both candidates face identical search draws. Without that last detail the search\u2019s own variance swamps a single bounded edit and the gate accepts noise.",
+          },
+          {
+            term: "A ledger that keeps both numbers",
+            detail:
+              "Every proposal is recorded with its visible and held-out deltas, accepted or not. The gap between them is the reward-hacking signal, and it only exists if both are kept. A loop that logs \u201caccepted, +3%\u201d cannot tell you which 3%.",
+          },
+          {
+            term: "An oracle for scale",
+            detail:
+              "The task generator originally sampled operations uniformly, which made a uniform search policy Bayes-optimal by construction and left the loop with nothing to find. Every arm came out flat, and the flatness looked like a finding about self-improvement. Tasks are now drawn from a skewed distribution and a Policy.oracle matches it exactly \u2014 without that reference, \u201c+0.03\u201d could be most of what is achievable or a rounding error.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     slug: "spindle",
     name: "spindle",
     tagline: "A paged-attention inference engine with continuous batching and speculative decoding",
