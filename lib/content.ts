@@ -568,10 +568,7 @@ export const publications: Publication[] = [
     status: "Preprint · under review",
     abstract:
       "Multi-agent frameworks make it cheap to instantiate agents and have them coordinate, but treat each run as disposable — almost no structured evidence survives into the next assignment. CONOID maintains a persistent agent population carrying profiles, tiered memories, signed social edges, and a per-skill Beta-reputation posterior, updated by a structured judge under per-channel guardrails. On a 691,200-row oracle-backed benchmark, static role assignment is the best non-oracle policy when profiles are reliable, while reputation-plus-exploration wins when profiles are weak (85.2% vs 75.5%) or adversarially noisy (65.9% vs 44.2%). A separate coordinator replay isolates answer aggregation as a distinct failure mode: schema-constrained aggregation drops accuracy from 0.839 to 0.586 where deterministic slot assembly recovers 0.992.",
-    // No public PDF in the repo yet. Drop the preprint at
-    // public/conoid/preprint.pdf and replace this with:
-    //   links: [{ label: "PDF", href: "/conoid/preprint.pdf", external: true }],
-    note: "Preprint available on request",
+    links: [{ label: "PDF", href: "/conoid/preprint.pdf", external: true }],
   },
 ];
 
