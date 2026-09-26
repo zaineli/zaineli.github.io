@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { metaDescription, profile } from "@/lib/content";
 import Nav from "@/components/Nav";
@@ -11,10 +11,11 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
 });
-const instrument = Instrument_Serif({
+const newsreader = Newsreader({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-instrument",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 const jetbrains = JetBrains_Mono({
@@ -49,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${instrument.variable} ${jetbrains.variable}`}
+      className={`${inter.variable} ${newsreader.variable} ${jetbrains.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
