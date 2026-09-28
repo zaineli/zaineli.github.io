@@ -25,6 +25,14 @@ export const profile = {
   /** One line under the name. */
   standfirst: "Reinforcement learning, world models, and the memory and inference systems agents need to improve with use.",
 
+  /**
+   * The conviction, not the description — his own words, verbatim from where
+   * he's stated it. Everything else on this page says what he works on; this
+   * is the one line that says why, and it's the sentence someone should
+   * actually remember him by.
+   */
+  manifesto: "I don't think LLMs get us to AGI. I think RL does.",
+
   /** Two paragraphs. The first says what the work is; the second, how it is done. */
   bio: [
     "I build the parts of an agent that persist. Most agent systems are stateless: a team is assembled, an answer is produced, and nothing about what worked survives into the next run. My work is on the layer underneath that — per-skill reputation that conditions future decisions, memory architectures modelled on hippocampal consolidation rather than on a vector index, and the inference machinery that makes any of it affordable to run.",

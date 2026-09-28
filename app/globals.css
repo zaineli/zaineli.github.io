@@ -210,6 +210,18 @@
     color: var(--text-secondary);
   }
 
+  /* The conviction line — upright, heavier, and in the accent, so it reads
+     as a stated position rather than as more descriptive framing. */
+  .t-manifesto {
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 1.7vw, 1.375rem);
+    font-weight: 500;
+    font-style: normal;
+    line-height: 1.45;
+    letter-spacing: -0.008em;
+    color: var(--accent);
+  }
+
   .t-body {
     font-family: var(--font-serif);
     font-size: 1rem;
@@ -312,41 +324,51 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* The hero graphic: real dentate-gyrus sparse codes from the engram benchmark.
-   Drawn as a CSS mask rather than an <img> so it takes the accent colour --
-   an <img> cannot inherit currentColor, and the first version rendered as a
-   flat grey field that read as noise rather than as part of the palette.
+/* The hero graphic: real dentate-gyrus sparse codes from the engram
+   benchmark, not stock art. Drawn as a CSS mask rather than an <img> so it
+   takes the accent colour -- an <img> cannot inherit currentColor.
 
-   The horizontal fade is what makes it safe to overlap the prose: the marks
-   are effectively absent over the text column and reach full strength only
-   past it. Decorative, so it carries aria-hidden and is dropped below lg. */
+   It is meant to be a genuine centrepiece, not a corner texture: it is sized
+   as a fraction of the content column (not the full viewport section) so its
+   position stays predictable across widths, and it is positioned first in
+   markup so the card and prose sit visually on top of it, the same
+   figure-behind-content composition the reference site uses for its own
+   generated art.
+
+   The edge fade is a second gradient layer combined with the SVG shape via
+   mask-composite, so the fade is a property of the mask itself rather than a
+   same-colour rectangle painted over the graphic -- the earlier version used
+   the latter, which hard-clipped almost half the artwork under a flat
+   overlay. Decorative throughout, so aria-hidden and dropped below lg where
+   there is no room for it to sit behind anything. */
 .graphic {
   background-color: var(--accent);
-  -webkit-mask-image: url("/graphic/dg-field.svg");
-  mask-image: url("/graphic/dg-field.svg");
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  opacity: 0.42;
-  pointer-events: none;
-  /* Fade in from the left so the field never competes with body text. */
-  --fade: linear-gradient(to right, transparent 0%, #000 34%, #000 78%, transparent 100%);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 46%, #000 100%),
+    url("/graphic/dg-field.svg");
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 46%, #000 100%),
+    url("/graphic/dg-field.svg");
+  -webkit-mask-size: 100% 100%, 100% 100%;
+  mask-size: 100% 100%, 100% 100%;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
   -webkit-mask-composite: source-in;
-}
-.graphic::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, var(--bg) 0%, transparent 42%);
-}
-.graphic::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, var(--bg) 0%, transparent 14%, transparent 72%, var(--bg) 100%);
-  z-index: 1;
+  mask-composite: intersect;
+  opacity: 0.62;
+  pointer-events: none;
 }
 [data-theme="dark"] .graphic {
-  opacity: 0.5;
+  opacity: 0.66;
+}
+
+/* Quieter variant for the system write-up pages: the same field, restrained,
+   since it sits behind a header rather than carrying the whole first
+   impression of the page. Consistency with the home page's visual language
+   without competing with a long read. */
+.graphic-quiet {
+  opacity: 0.22;
+}
+[data-theme="dark"] .graphic-quiet {
+  opacity: 0.28;
 }
