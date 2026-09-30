@@ -1,38 +1,28 @@
-import Hero from "@/components/Hero";
-import Section from "@/components/Section";
-import Interests from "@/components/Interests";
-import Experience from "@/components/Experience";
-import Systems from "@/components/Systems";
-import Publications from "@/components/Publications";
+import Hero from "@/components/sections/Hero";
+import Systems from "@/components/sections/Systems";
+import Papers from "@/components/sections/Papers";
+import SaidNo from "@/components/sections/SaidNo";
+import Record from "@/components/sections/Record";
+import Contact from "@/components/sections/Contact";
 
+/**
+ * AGAINST THE CONTROL. A reader from a research lab does not trust a
+ * headline number; they look for what it was measured against. Every piece
+ * of work here has one — a tuned hybrid, a held-out gate, a uniform-length
+ * control, an oracle, static roles — so the page is set the way such a
+ * reader already reads: a title, a results table, the papers, the errata,
+ * the author's record. Serif for what is read, grotesk for what is
+ * measured, one red for what said no.
+ */
 export default function Home() {
   return (
     <>
       <Hero />
-
-      <Section
-        id="research"
-        eyebrow="Research interests"
-        intro="Four threads, all pointed at the same problem: an agent that does not get better with use is a demo, not a system."
-      >
-        <Interests />
-      </Section>
-
-      <Section id="experience" eyebrow="Experience">
-        <Experience />
-      </Section>
-
-      <Section
-        id="systems"
-        eyebrow="Systems"
-        intro="Built from scratch, benchmarked against the baselines they claim to beat, and written up with the negative results included. Every number links to the script that produced it."
-      >
-        <Systems />
-      </Section>
-
-      <Section id="publications" eyebrow="Publications">
-        <Publications />
-      </Section>
+      <Systems />
+      <Papers />
+      <SaidNo />
+      <Record />
+      <Contact />
     </>
   );
 }
