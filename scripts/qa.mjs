@@ -28,6 +28,7 @@ import { readFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { chromium } from "playwright";
+import { publications, systems } from "../lib/content.ts";
 
 const OUT = "out";
 const SHOTS = "scripts/.qa";
@@ -66,7 +67,8 @@ const failures = [];
 const fail = (m) => failures.push(m);
 const browser = await chromium.launch();
 
-const ROUTES = ["/", "/systems/engram/", "/systems/whetstone/", "/systems/spindle/", "/systems/reverie/", "/papers/conoid/"];
+// The routes follow the content model, so a withheld system (GEDANKEN_PUBLIC) is neither checked nor expected.
+const ROUTES = ["/", ...systems.map((s) => `/systems/${s.slug}/`), ...publications.map((p) => `/papers/${p.slug}/`)];
 const SIGNAL = ["rgb(207, 46, 27)", "rgb(179, 38, 26)"];
 
 async function open(path, width, height = 900) {
@@ -282,7 +284,7 @@ for (const path of ROUTES) {
       caption: r.querySelector(".c-fig figcaption")?.textContent.trim() ?? "",
     })),
   );
-  if (rows.length !== 4) fail(`/: expected 4 results rows, found ${rows.length}`);
+  if (rows.length !== systems.length) fail(`/: expected ${systems.length} results rows, found ${rows.length}`);
   for (const r of rows) if (!r.caption) fail(`/: results row ${r.id} has a figure with no caption`);
   await ctx.close();
 }

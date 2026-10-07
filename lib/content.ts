@@ -16,7 +16,7 @@ export interface Link {
   external?: boolean;
 }
 
-export type SystemSlug = "engram" | "reverie" | "whetstone" | "spindle";
+export type SystemSlug = "gedanken" | "engram" | "reverie" | "whetstone" | "spindle";
 
 /* ------------------------------------------------------------------ *
  * Figures. Every figure on the site is drawn at build time from the
@@ -449,6 +449,309 @@ export interface System {
 }
 
 const systemList: System[] = [
+  {
+    slug: "gedanken",
+    name: "gedanken",
+    tagline: "The Einstein test, made runnable",
+    pitch:
+      "A runnable Einstein test: universes where a clock prediction is right only if the agent extends a frame–field equivalence that matched decoys break. Preregistered; GPT-6 Luna can run the check when asked but almost never thinks to.",
+    year: "2026",
+    abstract:
+      "Hassabis has proposed a test for general intelligence: give a system a knowledge cutoff of 1911 and see whether it comes up with general relativity. It cannot be run on real physics, because every model has read the answer. gedanken builds a runnable analogue of the step Einstein took in 1907: procedurally generated universes in which a textbook theory is exact on every experiment an agent can run, and a clock-rate prediction in a regime no experiment reaches is right only if the agent extends a frame–field equivalence that holds for some kinds of matter and, in matched decoy universes, fails for one. No policy blind to the check can beat 1/2. In a preregistered study GPT-6 Luna found the equivalence in 138 of 140 episodes, checked it in 2, and did not beat 1/2 detectably; asked directly, it ran the decisive experiment in 140 of 140 and answered correctly in 139.",
+    thread: "Thought experiments and discovery",
+    verdict: "The model can imagine and can check, but does not think to check before it leaps.",
+    // Leads with the number that held, the asked check, so the first red a
+    // reader meets is not the first thing under the thesis; the turn under it
+    // is the failure, and the figure sets both against the blind ceiling.
+    lead: {
+      value: "0.993",
+      label: "balanced accuracy, asked to check · 70 matched pairs",
+      after: "Unasked, it checks 2 of 140.",
+    },
+    homeLine: "The model can imagine and can check, but does not think to check before it leaps.",
+    homeFigure: {
+      id: "home-gedanken",
+      label: "home",
+      title: "balanced accuracy · GPT-6 Luna · 70 matched pairs per arm",
+      caption: "",
+      section: "asked-it-checks-every-time",
+      kind: "bars",
+      max: 1,
+      bars: [
+        { label: "end to end", value: 0.479, display: "0.479", ink: "neg" },
+        { label: "thought experiment handed over", value: 0.457, display: "0.457", ink: "neg" },
+        { label: "asked to check", value: 0.993, ink: "claim", hideValue: true },
+      ],
+      reference: { value: 0.5, label: "blind ceiling, 1/2" },
+    },
+    metrics: [
+      { label: "balanced accuracy, asked to check", value: "0.993", emphasis: true },
+      { label: "checks the equivalence unprompted", value: "2 / 140", negative: true },
+      { label: "balanced accuracy end to end, blind ceiling 0.5", value: "0.479", negative: true },
+    ],
+    readouts: [
+      { value: "138 / 140", label: "finds the thought experiment’s pairing" },
+      { value: "2 / 140", label: "checks it unprompted", negative: true },
+    ],
+    spec: "F-ACC · 70 matched pairs + 16 leak pairs · preregistered · exact sign tests · Python",
+    figures: [
+      {
+        id: "stages",
+        label: "stages",
+        title: "GPT-6 Luna, stage by stage · 140 episodes per arm",
+        section: "where-the-leap-breaks",
+        kind: "bars",
+        max: 1,
+        bars: [
+          { label: "finds the pairing", value: 138 / 140, display: "138 / 140" },
+          { label: "checks, unprompted (L0)", value: 2 / 140, display: "2 / 140", ink: "neg" },
+          { label: "checks, unprompted (L1)", value: 2 / 140, display: "2 / 140", ink: "neg" },
+          { label: "checks, asked (S2)", value: 1, display: "140 / 140", ink: "claim" },
+          { label: "right verdict, asked (S2)", value: 139 / 140, display: "139 / 140", ink: "claim" },
+        ],
+      },
+      {
+        id: "accuracy",
+        label: "accuracy",
+        title: "balanced accuracy · 70 matched pairs per arm · 95% intervals in the tables",
+        section: "asked-it-checks-every-time",
+        kind: "bars",
+        max: 1,
+        bars: [
+          { label: "end to end (L0)", value: 0.479, display: "0.479", ink: "neg" },
+          { label: "thought experiment handed over (L1)", value: 0.457, display: "0.457", ink: "neg" },
+          { label: "asked to check (S2)", value: 0.993, display: "0.993", ink: "claim" },
+        ],
+        reference: { value: 0.5, label: "blind ceiling, 1/2" },
+      },
+    ],
+    caseFigures: [
+      {
+        id: "rl-curves",
+        label: "RL",
+        title: "greedy dev BA, worse of the two training families · E1.R, rung R2, 2 × 10⁶ episodes per seed",
+        section: "the-rl-arm-did-not-learn",
+        negative: true,
+        kind: "lines",
+        x: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0],
+        xLabel: "training episodes, millions",
+        yMin: 0,
+        yMax: 1,
+        series: [
+          { label: "seed 0", points: [0.5, 0.5, 0.5, 0.395, 0.415, 0.5, 0.34, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5] },
+          { label: "seed 1", points: [0.0, 0.44, 0.485, 0.5, 0.5, 0.5, 0.5, 0.5, 0.135, 0.5, 0.5, 0.025, 0.5, 0.5, 0.5, 0.015, 0.5, 0.5, 0.0, 0.0, 0.5] },
+          { label: "seed 2", points: [0.5, 0.465, 0.5, 0.5, 0.5, 0.5, 0.5, 0.44, 0.5, 0.37, 0.5, 0.5, 0.5, 0.5, 0.5, 0.495, 0.5, 0.5, 0.5, 0.5, 0.5] },
+        ],
+        reference: { value: 0.75, label: "learning bar" },
+      },
+    ],
+    schematic: {
+      w: 24,
+      h: 8,
+      nodes: [
+        { id: "text", label: "one text, two universes", x: 3, y: 2, w: 4.4 },
+        { id: "lab", label: "lab: free, carriage, field", x: 3, y: 5, w: 4.4 },
+        { id: "pairing", label: "find the pairing μ", x: 9.5, y: 3.5, w: 3.6 },
+        { id: "check", label: "query the consequence class", x: 12.5, y: 6.6, w: 4.4, kind: "gate" },
+        { id: "adopt", label: "adopt the equivalence", x: 15.6, y: 3.5, w: 3.8 },
+        { id: "answer", label: "clock ratio", x: 21, y: 3.5, w: 3 },
+      ],
+      edges: [
+        { from: "text", to: "pairing" },
+        { from: "lab", to: "pairing" },
+        { from: "pairing", to: "adopt", label: "the leap" },
+        { from: "adopt", to: "answer" },
+        { from: "pairing", to: "check", dashed: true },
+        { from: "check", to: "adopt", dashed: true, label: "2 of 140 unprompted", labelAt: [16.4, 5.2] },
+      ],
+    },
+    // ids are render keys, continuing after the last used one.
+    ledger: [
+      {
+        id: 24,
+        term: "End to end, it never beats chance",
+        kind: "result",
+        number: "0 of 70 pairs right in both",
+        anchor: "end-to-end-it-never-beats-chance",
+        detail:
+          "It queried the consequence class in the field in 2. So it was right on the I members and wrong on every D member, and beating 1/2 was not detected.",
+      },
+      {
+        id: 25,
+        term: "Handing it the thought experiment helps",
+        kind: "hypothesis",
+        number: "gain −0.021",
+        anchor: "handed-the-thought-experiment-it-doubts-but-does-not-inquire",
+        expected: "with the pairing in hand, it applies the equivalence to the clock",
+        measured: "a gain was not detected; in 19 episodes it declined to answer",
+        why: "It doubted, but did not inquire.",
+      },
+      {
+        id: 26,
+        term: "An RL agent learns to check",
+        kind: "hypothesis",
+        number: "best median 0.495, bar 0.75",
+        anchor: "the-rl-arm-did-not-learn",
+        expected: "a check-then-use rule, meta-trained by PPO across two training families",
+        measured: "after episode 0, no run made a single correct jump at any evaluation",
+        why: "the agent stayed on the free “default” answer, which earns 1/2",
+      },
+      {
+        id: 27,
+        term: "OpenAI tools sent in strict mode",
+        kind: "bug",
+        number: "156 of 156 experiments refused",
+        anchor: "bugs-the-practice-checks-caught",
+        detail:
+          "Through the router, an OpenAI model’s tools went out in strict mode, so its decoding filled every optional key and the laboratory refused all 156 of its first practice experiments as malformed.",
+      },
+      {
+        id: 28,
+        term: "A sandbox that could read other processes’ environments",
+        kind: "bug",
+        number: "2,133 python calls, none used it",
+        anchor: "bugs-the-practice-checks-caught",
+        detail:
+          "Code in the python tool could read any same-user process’s start-up environment, where the API key sat. No model used it.",
+      },
+      {
+        id: 29,
+        term: "Unbilled reservations counted as spend",
+        kind: "bug",
+        number: "38 → 64 pairs",
+        anchor: "bugs-the-practice-checks-caught",
+        detail:
+          "The cost rule sizes each model’s pair set from what its practice check billed, but the report counted the reservations of refused requests as dollars.",
+      },
+    ],
+    repo: "https://github.com/zaineli/gedanken",
+    metaKeywords: ["Scientific discovery", "LLM evaluation", "Preregistration", "Thought experiments", "RL"],
+    sections: [
+      {
+        heading: "The test that cannot be run",
+        paragraphs: [
+          "Nobody can run Hassabis’s test as stated: no frontier model has a 1911 cutoff, and the answer is in every corpus. gedanken runs the step Einstein took in 1907 instead: from a person in free fall who does not feel their weight to the gravitational redshift, derived before anyone had measured it.",
+          "When the incumbent theory is exact on everything an agent can observe, whether it extends a frame–field equivalence to a quantity no experiment reaches is a matter of its prior. So the test makes extending the equivalence right exactly when an accessible check passes, and then measures two things: which agents hold the prior, and which also run the check.",
+        ],
+      },
+      {
+        heading: "The instrument",
+        paragraphs: [
+          "Procedurally generated universes with a free regime, an accelerated “carriage” and a field, every law exact and every name alien and regenerated per universe. A textbook states the incumbent theory, exact on every experiment the laboratory serves, and the carriage’s laws, its clock law included. The field is known only from data. The scored question is the clock-rate ratio between two heights in the field, a regime the laboratory never serves; it is fixed only if the agent adopts “the field is the paired frame, for every process”.",
+          "Each matched pair has two universes with byte-identical texts. In I the identity holds for every kind of object; in D it fails for one consequence class, visible only by querying that class in the field. So every policy that never makes the check scores at most 1/2, and always-jump, never-jump and copy-the-incumbent score exactly 1/2 on every pair. Leak pairs match an I member with a twin no experiment can tell apart from it: beating 1/2 there would mean the instrument leaks.",
+        ],
+        table: {
+          head: ["member", "the field acts as the carriage on", "true clock ratio"],
+          rows: [
+            ["I", "every kind of object", "v*"],
+            ["D", "every kind but the consequence class", "v₀ = 1, the incumbent’s"],
+            ["U, the leak twin", "what no experiment can tell from I", "v₀ = 1"],
+          ],
+        },
+      },
+      {
+        heading: "Preregistered before any model ran",
+        paragraphs: [
+          "The rules were frozen first: the arms, the 70 test pairs and 16 leak pairs, the exact one-sided sign tests and their families, the leak gate as a stop rule, the cost rule that sizes each model’s set from a six-episode practice check, and the stopping rules. Twenty-nine amendments followed, each logged with its reason and with what had been seen when it was made. Four independent audits re-derived the result: every episode re-scored against regenerated universes with 0 mismatches, every transcript matching its recorded fingerprint.",
+          "Two of the three planned models left under the frozen rules before any test episode, one on privacy and one on cost, and the replacements failed on cost or context. GLM-5.3 Flash joined, lost its server mid-run, and was stopped on the only other one, where it waited on rate limits about 91% of the time. One model is fully reported: GPT-6 Luna.",
+        ],
+      },
+      {
+        heading: "End to end, it never beats chance",
+        negative: true,
+        table: {
+          head: ["GPT-6 Luna, end to end", "value"],
+          rows: [
+            ["finds the pairing", "138 / 140"],
+            ["queries the consequence class in the field", "2 / 140"],
+            ["answers that apply the equivalence", "139 / 139"],
+            ["right on I members · on D members", "67 / 70 · 0 / 70"],
+            ["balanced accuracy", "0.479 [0.450, 0.500]"],
+            ["pairs right in both · wrong in both", "0 · 3"],
+          ],
+          caption: "L0: the episode text and the laboratory. L-a, the exact one-sided sign test of the pairs right in both against the pairs wrong in both: p = 1.",
+        },
+        paragraphs: [
+          "It found the thought experiment’s pairing in 138 of 140 episodes and applied the equivalence in every answer it gave: 132 of 139 answers were v*, and the other 7 the same ratio inverted. It queried the consequence class in the field in 2. So it was right on the I members and wrong on every D member, and beating 1/2 was not detected.",
+        ],
+      },
+      {
+        heading: "Handed the thought experiment, it doubts but does not inquire",
+        negative: true,
+        paragraphs: [
+          "L1 hands over the pairing and the value it implies. Balanced accuracy 0.457 [0.421, 0.486]: a gain was not detected (L-b p = 0.91; gain −0.021 [−0.064, 0.021]).",
+          "In 19 episodes it declined to answer. In every one it explained, in its own words, that the hand-off matched only the trajectories of matter, not clock rates or signal propagation. In 8 it gave the value the full equivalence would imply anyway: “The hand-off establishes matching trajectories only … Extending the equivalence to light and clocks would give 1.06259, but that extension is not stated.” In none of the 19 did it query the consequence class in the field, the one accessible experiment that bears on whether the equivalence holds for everything. It doubted, but did not inquire.",
+        ],
+      },
+      {
+        heading: "Asked, it checks every time",
+        table: {
+          head: ["S2: “do all kinds respond alike?”", "value"],
+          rows: [
+            ["queries the consequence class in the field", "140 / 140"],
+            ["right verdict", "139 / 140"],
+            ["balanced accuracy", "0.993 [0.979, 1.000]"],
+            ["pairs right in both · wrong in both", "69 · 0"],
+          ],
+          caption: "E-a, the exact one-sided sign test: p = 1.7 × 10⁻²¹. Locked before any of its episodes.",
+        },
+        paragraphs: [
+          "The extension hands over the pairing and asks the one question the leap depends on. The model ran the decisive experiment every time and read it correctly in all but one episode. So it can check; end to end, it does not think to.",
+        ],
+      },
+      {
+        heading: "Where the leap breaks",
+        paragraphs: [
+          "The 1907 step splits into typed stages: finding the pairing (computation), checking that it holds for every kind of matter (inference), adopting it (prior) and applying it (computation). GPT-6 Luna finds the pairing, can run the check when asked, and adopts and applies the equivalence whenever it answers. It almost never thinks of the check: 1.4%.",
+          "The failure is therefore neither a failure to imagine nor a failure to compute. It is a failure to ask, before leaping, the one question the leap depends on. Its prior favours the equivalence; what it lacks is the check that makes leaping warranted. In universes where the equivalence is sometimes false, that is the difference between Einstein and a lucky guess.",
+        ],
+      },
+      {
+        heading: "The RL arm did not learn",
+        negative: true,
+        table: {
+          head: ["run", "rung", "per-seed minima", "median"],
+          rows: [
+            ["E1.2", "R1", "0.475, 0.315, 0.5", "0.475"],
+            ["E1.3", "R2", "0.0, 0.5, 0.495", "0.495"],
+            ["E1.R", "R2, 2 × 10⁶ episodes per seed", "0.5, 0.5, 0.5", "0.5"],
+          ],
+          caption: "Final greedy development BA, the minimum over the two training families. A rung learns if its median seed reaches 0.75.",
+        },
+        paragraphs: [
+          "The thesis arm asked whether a 3,315,508-parameter transformer, meta-trained by PPO across two training families, learns a check-then-use rule. Nine runs trained for 9,000,576 episodes and 16.2 hours on a laptop CPU. After episode 0, no run made a single correct jump at any evaluation: the agent stayed on the free “default” answer, which earns 1/2.",
+          "The shallow comparator did learn and transfer: a conditional logit that scores candidate frames by one shared linear function reached cross-family BA 1.000 in three of four directions. The RL arm is dead as designed — a statement about this interface and this compute, not about RL.",
+        ],
+      },
+      {
+        heading: "Bugs the practice checks caught",
+        negative: true,
+        list: [
+          {
+            term: "OpenAI tools sent in strict mode",
+            detail:
+              "Through the router, an OpenAI model’s tools went out in strict mode, so its decoding filled every optional key and the laboratory refused all 156 of its first practice experiments as malformed. They now go out with strict off, as the direct route always sent them, and a regression test fails without the fix.",
+          },
+          {
+            term: "A sandbox that could read other processes’ environments",
+            detail:
+              "Code in the python tool could read any same-user process’s start-up environment, where the API key sat. No model used it: none of Luna’s 2,133 python calls touches the environment. The key now lives only in a file the tool cannot read.",
+          },
+          {
+            term: "Unbilled reservations counted as spend",
+            detail:
+              "The cost rule sizes each model’s pair set from what its practice check billed, but the report counted the reservations of refused requests as dollars. Recomputed on billed dollars, GLM-5.3 Flash’s set went from 38 pairs to 64.",
+          },
+        ],
+      },
+      {
+        heading: "What this does not show",
+        paragraphs: [
+          "One fully reported model, and a cheap one: nothing here is a statement about “LLMs”. One universe family and one readout. The asked check names the comparison — exactly the hint whose effect it measures, but a strong one; weaker prompts were not run. One sample per universe, at the vendor’s default sampling. The RL result is a negative at laptop compute, with one architecture and one interface.",
+        ],
+      },
+    ],
+  },
   {
     slug: "engram",
     name: "engram",
@@ -1549,12 +1852,28 @@ export const asides: Aside[] = [
 ];
 
 /**
- * Page order: the two numbers that held first, then the two that said no,
- * so the first red a reader meets is not the first thing under the thesis.
- * reverie — the RL thesis's own first attempt — stands under the portrait.
- * The case-page ring follows the same order.
+ * gedanken is withheld until its repository is public. Every number on this
+ * site is one someone could check, and a reader cannot check a private
+ * repository. While this is false nothing of it reaches out/: no row, no
+ * case page, no ledger entry, no fact. Flip it the day
+ * github.com/zaineli/gedanken is public.
  */
-const ORDER: SystemSlug[] = ["engram", "whetstone", "spindle", "reverie"];
+export const GEDANKEN_PUBLIC = false;
+
+/**
+ * Page order: the numbers that held first, then the two that said no, so the
+ * first red a reader meets is not the first thing under the thesis. Once
+ * public, gedanken leads: its number held (the asked check) and its turn is
+ * the failure. reverie — the RL thesis's own first attempt — stands under the
+ * portrait. The case-page ring follows the same order.
+ */
+const ORDER: SystemSlug[] = [
+  ...(GEDANKEN_PUBLIC ? (["gedanken"] as const) : []),
+  "engram",
+  "whetstone",
+  "spindle",
+  "reverie",
+];
 export const systems: System[] = ORDER.map((slug) => systemList.find((s) => s.slug === slug)!);
 
 export const systemBySlug = (slug: string): System | undefined =>
