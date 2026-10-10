@@ -96,14 +96,18 @@ for (const [phrase, allowed] of Object.entries(allowlist)) {
   if (n > allowed) failures.push(`${n}× "${phrase}" (allowed ${allowed})`);
 }
 
-// 2. the thesis lines are the manifesto, and the numeral is static
-if (profile.manifestoLines.join(" ") !== profile.manifesto) {
-  failures.push("profile.manifestoLines do not join back to profile.manifesto");
+// 2. the counts are static, and the static pages ship no script
+const saidPath = `${OUT}/said-no/index.html`;
+const saidHtml = existsSync(saidPath) ? readFileSync(saidPath, "utf8") : "";
+if (!saidHtml.includes(`data-sr="">${negativeCount} negative results<`)) {
+  failures.push(`the ledger numeral ${negativeCount} is not static on /said-no/, or its screen-reader text is missing`);
 }
-if (!homeHtml.includes(`data-sr="">${negativeCount} negative results<`)) {
-  failures.push(`the ledger numeral ${negativeCount} is not static in the home page, or its screen-reader text is missing`);
+if (!new RegExp(`>${negativeCount}</span>\\s*(<!-- -->)?results on this site said no`).test(homeHtml)) {
+  failures.push(`the home tally ${negativeCount} is not static`);
 }
-if (/<script\b/i.test(homeHtml)) failures.push("the home page ships a <script> (strip-js did not run?)");
+for (const [path, html] of [[homePath, homeHtml], [saidPath, saidHtml]]) {
+  if (/<script\b/i.test(html)) failures.push(`${path} ships a <script> (strip-js did not run?)`);
+}
 
 // 3. every deep link lands on something
 const needId = (page: string, id: string, what: string) => {
@@ -117,7 +121,7 @@ for (const s of systems) {
     if (!ids.has(e.anchor)) failures.push(`${s.slug} ledger "${e.term}" points at a hidden or missing section #${e.anchor}`);
     needId(page, e.anchor, `ledger "${e.term}"`);
   }
-  if (shownLedger(s.ledger).length) needId(homePath, `no-${s.slug}`, `${s.slug} "said no" link`);
+  if (shownLedger(s.ledger).length) needId(saidPath, `no-${s.slug}`, `${s.slug} "said no" link`);
   for (const section of s.sections) if (!slugify(section.heading)) failures.push(`${s.slug}: empty slug for "${section.heading}"`);
 }
 for (const p of publications) {

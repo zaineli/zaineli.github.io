@@ -10,9 +10,9 @@ import {
   systems,
 } from "@/lib/content";
 import { slugify } from "@/lib/slug";
+import { smart } from "@/lib/typo";
 import CaseSection from "@/components/case/CaseSection";
 import PrevNext from "@/components/case/PrevNext";
-import ResultsMode from "@/components/case/ResultsMode";
 import Schematic from "@/components/Schematic";
 import KeepHyphens from "@/components/KeepHyphens";
 import Num from "@/components/Num";
@@ -102,16 +102,12 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
             </p>
           </div>
         ))}
-        <div className="q4">
-          <p className="k">Show</p>
-          <ResultsMode target={ARTICLE_ID} />
-        </div>
       </div>
 
       <Schematic schematic={system.schematic} label={system.name} />
 
       <div className="g12">
-        <p className="lede">{held?.abstract ?? system.abstract}</p>
+        <p className="lede">{smart(held?.abstract ?? system.abstract)}</p>
       </div>
 
       {sections.map((section) => {

@@ -16,7 +16,7 @@ export interface Link {
   external?: boolean;
 }
 
-export type SystemSlug = "gedanken" | "engram" | "reverie" | "whetstone" | "spindle";
+export type SystemSlug = "gedanken" | "loci" | "engram" | "reverie" | "whetstone" | "spindle";
 
 /* ------------------------------------------------------------------ *
  * Figures. Every figure on the site is drawn at build time from the
@@ -268,6 +268,31 @@ export const profile = {
   /** The h1's three lines; check-once asserts they join back to `manifesto`. */
   manifestoLines: ["I don’t think LLMs", "get us to AGI.", "I think RL does."],
 
+  /**
+   * The opening, from his LinkedIn summary ("Machines can learn patterns.
+   * Machines can follow rules. Almost none of them can guess, the way people
+   * do without even trying."), cut at the turn. The page's h1.
+   */
+  opening: ["Machines can learn patterns.", "Machines can follow rules.", "Almost none of them can"],
+  /** The h1's last word, set in italic; its full stop is the page's one point of colour. */
+  openingWord: "guess",
+
+  /** What he is building: his LinkedIn line, said as his. */
+  building:
+    "At Alexein we’re building the guess: agents that build a real model of the world, search through it, and get corrected by what actually happens.",
+
+  /** How he holds the bet: the manifesto, then what he does about it. */
+  bet: "I build the pieces one at a time, test each against a control that could kill it, and publish the results that say no.",
+
+  /** The Work standfirst. */
+  workLine: "Each one measured against the control that could have killed it.",
+
+  /** The closing line: his GitHub bio, with the g put back. */
+  closer: "Stateless AI is broken. I’m fixing it.",
+
+  /** The foot. */
+  aside: "October 2026",
+
   /** The Record statement — LinkedIn summary, verbatim. */
   lives:
     "RL, world models, combinatorial search, behavioral cloning, linear algebra, neuroscience — that’s where I live.",
@@ -289,6 +314,30 @@ export const links: Link[] = [
   { label: "GitHub", href: "https://github.com/zaineli", external: true },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/zain-ali-43090a283", external: true },
   { label: "Email", href: "mailto:zali.bscs22seecs@seecs.edu.pk" },
+];
+
+/* ------------------------------------------------------------------ *
+ * How he works: five lines, verbatim, from files he wrote and committed —
+ * spindle's public README, and the engineering standard and research rules
+ * he seeded into his own and his team's repositories (2026-08-31).
+ * ------------------------------------------------------------------ */
+
+export interface Rule {
+  text: string;
+  /** Where the line is written down. */
+  source: string;
+  /** Linked when the source is public. */
+  href?: string;
+}
+
+export const rulesLine = "Four from the standards I set for my team, one from a README.";
+
+export const rules: Rule[] = [
+  { text: "The control matters more than the headline.", source: "spindle, README", href: "https://github.com/zaineli/spindle" },
+  { text: "A rule you cannot check is a wish.", source: "engineering standard" },
+  { text: "Never reframe a bug as an insight.", source: "research rules" },
+  { text: "Delete before you add.", source: "engineering standard, rule 1" },
+  { text: "Record dead ends with the same care as live ones.", source: "research repo, arguments/" },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -424,6 +473,10 @@ export interface System {
   lead: Lead;
   /** Home page: one verbatim sentence from the write-up, under the figure. */
   homeLine: string;
+  /** Home page: what the system asks, in plain words. */
+  question: string;
+  /** Home page: the one thing that said no, in one line. */
+  no: string;
   /** Home page: the column's figure. Never repeats `lead`'s value. */
   homeFigure: FigureSpec;
   /** What replaces the held claims while SPEC_DECODE_HOLD is true. */
@@ -469,6 +522,8 @@ const systemList: System[] = [
       after: "Unasked, it checks 2 of 140.",
     },
     homeLine: "The model can imagine and can check, but does not think to check before it leaps.",
+    question: "Can a model make Einstein’s 1907 leap, and does it check before it leaps?",
+    no: "The RL arm, my own bet, never made the jump in 9,000,576 episodes.",
     homeFigure: {
       id: "home-gedanken",
       label: "home",
@@ -766,11 +821,13 @@ const systemList: System[] = [
     // Leads with the held-out LongMemEval number and says plainly that it is
     // a tie; the figure under it is the benchmark nothing was tuned on.
     lead: {
-      value: "0.767",
-      label: "recall@5 · LongMemEval-S, held out",
-      after: "A tie with a tuned hybrid.",
+      value: "0.640",
+      label: "recall@10 · LoCoMo, never tuned on · MiniLM",
+      after: "Tuned hybrid: 0.614. With e5-small, a tie.",
     },
     homeLine: "The gain over a vector store is the conjunctive pathway.",
+    question: "Can a memory built like a hippocampus beat a tuned retrieval baseline?",
+    no: "On LongMemEval it ties the tuned hybrid on session recall and trails it on turn NDCG; sleep and reinstatement add nothing measurable.",
     homeFigure: {
       id: "home-engram",
       label: "home",
@@ -953,6 +1010,15 @@ const systemList: System[] = [
         anchor: "things-that-did-not-work",
         detail: "Kept for what it is good at: storage separation and fragment completion.",
       },
+      {
+        id: 38,
+        term: "The lead on LongMemEval",
+        kind: "result",
+        number: "+0.003 [−0.023, +0.029]",
+        anchor: "longmemeval-s-held-out",
+        detail:
+          "On session recall@5 engram ties the tuned z-score hybrid; on turn NDCG@10 it trails it, −0.019 [−0.034, −0.005].",
+      },
     ],
     repo: "https://github.com/zaineli/engram",
     metaKeywords: ["Memory", "Neuroscience", "Retrieval", "LongMemEval", "LoCoMo", "Python"],
@@ -1095,8 +1161,16 @@ const systemList: System[] = [
       "A VQ-VAE encoder, a transformer dynamics model over discrete latents, and cross-entropy-method planning inside it — on a gridworld built to require a model rather than a reactive policy. The headline result is negative, and is reported that way: planning closes only 13.4% of the gap between random and an oracle planner running on the true simulator. The architecture is structured so that “the model is inaccurate” and “the planner is weak” are separately measurable, and they have a definite answer.",
     thread: "World models and search",
     verdict: "The shortfall is model fidelity, and the rollout curve says so independently.",
-    lead: { value: "13.4", unit: "%", label: "of the random → oracle gap closed", negative: true },
+    lead: {
+      value: "13.4",
+      unit: "%",
+      label: "of the return gap from random to an oracle planner, closed · 20 episodes, one seed",
+      after: "The shortfall is model fidelity.",
+      negative: true,
+    },
     homeLine: "The shortfall is model fidelity, and the rollout curve says so independently.",
+    question: "Can a small world model plan where planning needs a model? If not, whose fault is it?",
+    no: "It solves no more episodes than random, and both hypotheses for why sampling fails were refuted.",
     // The oracle figure below (figures[1]), drawn on the home page as one band.
     homeFigure: {
       id: "home-reverie",
@@ -1379,12 +1453,15 @@ const systemList: System[] = [
     verdict:
       "The ungated arm scores highest of the three — that is what noise looks like when nothing suppresses it.",
     lead: {
-      value: "0.396",
-      label: "hack rate, visible vs held-out gate",
-      after: "Under a held-out gate, none.",
+      value: "39.6",
+      unit: "%",
+      label: "of accepted self-modifications only gamed the examples the gate could see",
+      after: "With no gate at all, 6.9%.",
       negative: true,
     },
     homeLine: "A loop that logs “accepted, +3%” cannot tell you which 3%.",
+    question: "When a system improves itself, can you tell a real gain from gaming its own verifier?",
+    no: "12 seeds cannot resolve whether it improves at all; even a gain the size of all the headroom would need 43.",
     homeFigure: {
       id: "home-whetstone",
       label: "home",
@@ -1580,8 +1657,15 @@ const systemList: System[] = [
       "An inference engine built from the memory manager up: block-paged KV cache with copy-on-write sharing, iteration-level scheduling with preemption, and lossless speculative decoding — over a from-scratch GPT-2 forward pass, because the interesting parts are exactly the parts a generate() API owns and hides. Correctness is pinned against HuggingFace: greedy output token-identical, prefill logits within 2e-3.",
     thread: "Inference engineering",
     verdict: "A latency benchmark that does not model arrival is measuring service time.",
-    lead: { value: "2.05", unit: "×", label: "throughput, continuous vs static batching" },
+    lead: {
+      value: "2.05",
+      unit: "×",
+      label: "throughput, continuous vs static batching",
+      after: "Token-identical to HuggingFace.",
+    },
     homeLine: "The control is more informative than the headline.",
+    question: "Which tricks inside an inference engine actually pay, and under what workload?",
+    no: "Give every request the same generation length and the gain falls to 1.16×.",
     homeFigure: {
       id: "home-spindle",
       label: "home",
@@ -1739,9 +1823,17 @@ const systemList: System[] = [
         term: "A stale distribution in speculation",
         kind: "bug",
         anchor: "two-bugs-worth-recording",
-        quote: "“the capital, of France, is Paris., and the capital” — which reads as a mediocre model rather than a broken cache.",
+        quote: "“the capital, of France, is Paris., and the capital”",
         detail:
           "When every proposal was accepted, the cache was already at prompt + output, so the resync had nothing to process and the next-token distribution silently kept its value from the start of the round. The bonus token was drawn from it.",
+      },
+      {
+        id: 39,
+        term: "The batching speed-up, under its control",
+        kind: "result",
+        number: "1.16×",
+        anchor: "continuous-batching-and-the-control",
+        quote: "The control is more informative than the headline.",
       },
     ],
     repo: "https://github.com/zaineli/spindle",
@@ -1826,6 +1918,361 @@ const systemList: System[] = [
       },
     ],
   },
+  {
+    slug: "loci",
+    name: "loci",
+    tagline: "Where a memory is put decides what it can do",
+    pitch:
+      "Placement in a grid-cell scaffold memory (Vector-HaSH, Nature 2025): a zero-fit theory that predicted 156 held-out runs to within 0.009 on average, a filing rule from its error law, and the finding that filing for recall does not find the structure imagination needs. Pre-registered and red-teamed.",
+    year: "2026",
+    abstract:
+      "Vector-HaSH (Chandra, Sharma, Chaudhuri & Fiete, Nature 2025) stores memories the way the hippocampus is thought to: a fixed scaffold of grid-cell modules combines into 3,600 addresses, each an error-correcting fixed point, and content is bound to addresses by heteroassociation. The paper leaves one choice open: where each memory goes. loci studies that choice. A Gaussian account of the cue path with no fitted parameters predicts how often a noisy cue finds its own address, for any placement. The theory's error law implies a filing rule: store where your recall points. And filing for recall turns out not to find the structure a memory needs to imagine. The main answers were pre-registered and tested on seeds no pilot had touched; exploratory checks are marked, and criteria that failed are reported where their numbers are. This is a study of how scaffold memories work and fail, not a better memory.",
+    thread: "Memory and imagination",
+    verdict: "This is a failure of search, not of the objective.",
+    lead: {
+      value: "0.009",
+      label: "mean |error| of a zero-fit theory over 156 held-out runs it was never developed on",
+      after: "Every one within 0.05.",
+    },
+    homeLine: "Filing for recall does not find the structure imagination needs.",
+    question: "Does where a memory is filed decide what it can recall, and what it can imagine?",
+    no: "Filed for recall, it constructs 0.24–0.31 of the combinations it never saw. Filed by the true factors, 0.95–1.00.",
+    homeFigure: {
+      id: "home-loci",
+      label: "home",
+      title: "never-experienced combinations constructed · factored content, 10% flips",
+      caption: "",
+      section: "filing-for-recall-does-not-find-the-structure-imagination-needs",
+      kind: "bars",
+      max: 1,
+      bars: [
+        { label: "filed at random", value: 0.004, display: "0.004" },
+        { label: "filed by the recall rule", value: 0.307, display: "0.307", ink: "neg" },
+        { label: "filed by the true factors", value: 0.999, display: "0.999", ink: "claim" },
+      ],
+    },
+    metrics: [
+      { label: "out-of-sample mean error, 156 conditions", value: "0.009", emphasis: true },
+      { label: "pre-registered criteria passed, round 2", value: "11 of 13" },
+      { label: "constructed, true factors vs recall rule", value: "0.999 / 0.307" },
+    ],
+    readouts: [
+      { value: "11 of 13", label: "pre-registered criteria passed as registered, round 2" },
+      {
+        value: "0.24–0.31",
+        label: "unseen combinations constructed when filed for recall, against 0.95–1.00",
+        negative: true,
+      },
+    ],
+    spec: "Vector-HaSH port · 3,600 addresses · seeds 40–49 · pre-registered · Python",
+    figures: [
+      {
+        id: "oos",
+        label: "out of sample",
+        title: "mean |error| of the frozen theory, by what each condition changed · 156 conditions",
+        section: "a-zero-fit-theory-of-noisy-recall",
+        kind: "bars",
+        max: 0.05,
+        reference: { value: 0.04, label: "pre-registered bar, per family" },
+        bars: [
+          { label: "half the place cells", value: 0.004, display: "0.004" },
+          { label: "masked cues, 50% unknown", value: 0.004, display: "0.004" },
+          { label: "sentence embeddings", value: 0.007, display: "0.007" },
+          { label: "a fourth grid module", value: 0.007, display: "0.007" },
+          { label: "factor counts no module matches", value: 0.008, display: "0.008" },
+          { label: "other module periods", value: 0.009, display: "0.009" },
+          { label: "loads between the developed ones", value: 0.007, display: "0.007" },
+          { label: "cue dimension 2,000", value: 0.01, display: "0.010" },
+          { label: "the paper's own write rule", value: 0.029, display: "0.029", ink: "base" },
+        ],
+      },
+      {
+        id: "consolidate",
+        label: "filing",
+        title: "noisy cues that find their own address · 3 factors, 10% of bits flipped, P/Ns = 0.8",
+        section: "a-filing-rule-from-the-error-law",
+        kind: "bars",
+        max: 1,
+        bars: [
+          { label: "random", value: 0.438, display: "0.438" },
+          { label: "encoded by the rule", value: 0.677, display: "0.677" },
+          { label: "k-means", value: 0.765, display: "0.765", ink: "base" },
+          { label: "encoded, then replayed", value: 0.839, display: "0.839", ink: "claim" },
+          { label: "oracle: the true factors", value: 0.888, display: "0.888" },
+        ],
+      },
+    ],
+    caseFigures: [
+      {
+        id: "imagine",
+        label: "imagination",
+        title: "recall, and construction of never-experienced combinations · factored content, 10% flips · read by the nearest of all 3,600 place codes",
+        section: "filing-for-recall-does-not-find-the-structure-imagination-needs",
+        kind: "pairs",
+        sharedScale: true,
+        pairs: [
+          {
+            label: "filed by the true factors",
+            a: { label: "recall", value: 0.991, display: "0.991" },
+            b: { label: "constructs", value: 0.999, display: "0.999", ink: "claim" },
+          },
+          {
+            label: "filed by the recall rule",
+            a: { label: "recall", value: 0.997, display: "0.997" },
+            b: { label: "constructs", value: 0.307, display: "0.307", ink: "neg" },
+          },
+          {
+            label: "filed at random",
+            a: { label: "recall", value: 0.961, display: "0.961" },
+            b: { label: "constructs", value: 0.004, display: "0.004", ink: "neg" },
+          },
+        ],
+      },
+    ],
+    schematic: {
+      w: 24,
+      h: 8,
+      nodes: [
+        { id: "cue", label: "noisy cue", x: 2, y: 3.5 },
+        { id: "map", label: "cue map · ridge", x: 6.2, y: 3.5, w: 3.4 },
+        { id: "place", label: "place cells", x: 10.4, y: 3.5 },
+        { id: "grid", label: "grid modules 3 · 4 · 5", x: 14.8, y: 3.5, w: 3.8, kind: "gate" },
+        { id: "address", label: "address", x: 19, y: 3.5 },
+        { id: "readout", label: "read-out", x: 22.2, y: 3.5, kind: "store" },
+        { id: "law", label: "error law", x: 6.2, y: 0.8 },
+        { id: "rule", label: "filing rule", x: 10.4, y: 0.8 },
+        { id: "where", label: "placement", x: 14.8, y: 0.8, kind: "store" },
+        { id: "replay", label: "replay", x: 19, y: 0.8 },
+        { id: "self", label: "filing through the read-out", x: 14.8, y: 6.5, w: 4.6, hatched: true },
+      ],
+      edges: [
+        { from: "cue", to: "map" },
+        { from: "map", to: "place", label: "coefficients" },
+        { from: "place", to: "grid" },
+        { from: "grid", to: "address", label: "snap" },
+        { from: "address", to: "readout" },
+        { from: "law", to: "rule" },
+        { from: "rule", to: "where", label: "store where recall points" },
+        { from: "replay", to: "where", label: "exact descent" },
+        { from: "where", to: "grid", dashed: true },
+        { from: "readout", to: "self", dashed: true, via: [[22.2, 6.5]] },
+      ],
+    },
+    ledger: [
+      {
+        id: 30,
+        term: "Filing for recall, read for imagination",
+        kind: "result",
+        number: "0.24–0.31 against 0.95–1.00",
+        anchor: "filing-for-recall-does-not-find-the-structure-imagination-needs",
+        quote: "This is a failure of search, not of the objective.",
+      },
+      {
+        id: 31,
+        term: "The rule against the oracle",
+        kind: "result",
+        number: "0.011–0.057 below",
+        anchor: "a-filing-rule-from-the-error-law",
+        detail:
+          "Pre-registered to land within 0.03 of an oracle that knows the content's true factors. It lands 0.011–0.057 below it at the headline condition, and on every content the 95% interval reaches past 0.03.",
+      },
+      {
+        id: 32,
+        term: "A memory that files itself",
+        kind: "mechanism",
+        number: "0.57–0.69",
+        anchor: "a-filing-rule-from-the-error-law",
+        quote: "It is a rule the error law implies, not yet something the network does.",
+        detail:
+          "The rule needs K and every stored pattern, together more state than the memory holds. Run through the network's own read-out, filing recalls 0.57–0.69 after replay: above random, below k-means' 0.72–0.84 (3 seeds, exploratory).",
+      },
+      {
+        id: 33,
+        term: "The theory's worst row",
+        kind: "result",
+        number: "0.068",
+        anchor: "a-zero-fit-theory-of-noisy-recall",
+        detail:
+          "Over E4's 1,240 rows the worst was off by 0.068, beyond the pre-registered 0.06. Each row measures one cue per item; re-measured over 20 cue draws (exploratory), the four worst fall within 0.021. A bar even a perfect theory would usually miss.",
+      },
+      {
+        id: 34,
+        term: "Accuracy is silent about structure",
+        kind: "hypothesis",
+        anchor: "what-did-not-survive",
+        expected: "Recall accuracy cannot tell the aligned filing from the one the rule finds.",
+        measured: "Through the paper's snap the rule's filing recalls 0.05 worse at 10% flips, and 0.10–0.19 worse at 20%.",
+        why: "Recall barely distinguishes the two, so it does not guide search there.",
+      },
+      {
+        id: 35,
+        term: "Consolidation discovers structure",
+        kind: "hypothesis",
+        anchor: "what-did-not-survive",
+        expected: "Replay that serves recall aligns the modules with the content's factors.",
+        measured:
+          "No recall-driven procedure tried aligned them at full phase resolution: greedy or annealed replay, independence penalties, restarts, the network's own read-out.",
+        why: "It happened when a granularity was supplied from outside.",
+      },
+      {
+        id: 36,
+        term: "The price of imagination is recall",
+        kind: "hypothesis",
+        anchor: "what-did-not-survive",
+        expected: "Treating never-stored states as valid costs noisy recall.",
+        measured: "Under aligned placement it costs 0.000–0.003, with a decoder that admits every address.",
+        why: "The apparent cost belonged to the paper's per-module snap. The price is false memory, for decoders that read place activity alone.",
+      },
+      {
+        id: 37,
+        term: "Round 1's criteria",
+        kind: "result",
+        number: "8 of 17",
+        anchor: "the-cliff-is-in-the-cue",
+        detail: "Round 1 failed 8 of its 17 pre-registered criteria; round 2 was built on what survived.",
+      },
+    ],
+    repo: "https://github.com/zaineli/loci",
+    metaKeywords: ["Memory", "Neuroscience", "Grid cells", "Vector-HaSH", "Pre-registration", "Python"],
+    sections: [
+      {
+        heading: "The open choice",
+        paragraphs: [
+          "A cue recalls by snapping to an address and reading out what is stored there. For content without a spatial layout, the paper says \"the scaffold trajectory can be arbitrarily chosen\". loci asks what that choice decides: what a memory can recall, and what it can imagine.",
+          "Its sensory error matches FieteLab/VectorHaSH at c71317d to every printed digit. A separate audit lists twelve places where the code does something a reader of the paper would not expect, each with its file, line and measured effect.",
+          "This is a study of how scaffold memories work and fail, not a better memory. kNN over the stored patterns keeps 800,000 bits, against the scaffold's 840,000 weights, and recalls everything.",
+        ],
+      },
+      {
+        heading: "A zero-fit theory of noisy recall",
+        paragraphs: [
+          "Recall is a chain, and every link has known statistics. A cue becomes coefficients over the stored items whose first two moments are exact; the place-cell input is Gaussian by the central limit theorem over the cue's bits; the ReLU is moment-matched; the grid input is then Gaussian over all grid cells; and recall is the probability that every module's argmax lands on the right phase. Nothing is fitted and no cue is drawn.",
+          "It was developed on 180 conditions, where its mean error was 0.010. Then it was frozen and hashed, and run on 156 held-out runs — 14 new settings, each with its placements, on 3 seeds — that change something it had not seen: new content, scaffolds, noise types and sizes. The predictions were hashed before the bars were written and before any measurement; results/oos/FROZEN.txt logs the order, including a first measurement launch that crashed and wrote nothing. Re-running the frozen code reproduces the hashed predictions exactly.",
+          "The error law alone fails. Project the coefficients through the phase indicators instead of the scaffold's templates and the mean error on the same conditions is 0.187. The law ranks placements; the magnitudes live in the scaffold.",
+        ],
+        table: {
+          head: ["new in these conditions", "mean |error|"],
+          rows: [
+            ["sentence embeddings (MiniLM, sign-projected)", "0.007"],
+            ["factor counts that match no module (7 / 12 / 4)", "0.008"],
+            ["other scaffolds: periods (5, 6, 7), a fourth module", "0.009, 0.007"],
+            ["half and double the place cells", "0.004, 0.008"],
+            ["other cue dimensions (Ns 500, 2,000)", "0.007, 0.010"],
+            ["masked cues instead of flipped (25%, 50% unknown)", "0.006, 0.004"],
+            ["loads between the developed ones (P/Ns 0.3, 0.5, 0.7)", "0.007"],
+            ["the paper's own write rule (pseudo-inverse)", "0.029, optimistic"],
+            ["all 156", "0.009; every one within 0.05; r = 0.999"],
+          ],
+          caption: "Mean |error| per family of held-out runs. bench/oos.py re-verifies the hashes and the scores.",
+        },
+      },
+      {
+        heading: "A filing rule from the error law",
+        paragraphs: [
+          "The error law changes by exact amounts when an item moves. For a new item, the cheapest free address is the one where its own recall coefficients are largest: store where your recall points. For a stored item, recall with its own trace set aside is exact coordinate descent on the law: move it to where that recall points. That is replay.",
+          "Encoded then replayed, the rule beats k-means on five kinds of content, by 0.05–0.15 at the headline condition. Replay does most of the optimising: replay from random addresses gets within 0.04 of it. The encoding's value is that the memory is organised from the first item on, 0.68 against 0.44 before any replay.",
+          "What the rule needs, the network cannot yet do. The rule needs K and every stored pattern, together more state than the memory's 840,000 weights. In pilots the network's own read-out delivers the rule's choice for 78–86% of new items; run through it end to end, filing recalls 0.57–0.69 after replay, above random and below k-means (3 seeds, exploratory).",
+        ],
+        table: {
+          head: ["content", "random", "k-means", "encoded", "then replayed", "oracle"],
+          rows: [
+            ["3 factors, 9 / 16 / 5 values", "0.438", "0.765", "0.677", "0.839", "0.888"],
+            ["3 factors, 7 / 12 / 4", "0.430", "0.764", "0.666", "0.815", "0.826"],
+            ["4 factors on 3 modules", "0.441", "0.770", "0.681", "0.832", "–"],
+            ["a 5 × 4 hierarchy", "0.462", "0.650", "0.668", "0.795", "–"],
+            ["life-log sentences", "0.277", "0.636", "0.539", "0.743", "0.800"],
+          ],
+          caption: "Noisy cues (10% of bits flipped) that find their own address through the paper's snap, P/Ns = 0.8, seeds 40–49.",
+        },
+      },
+      {
+        heading: "Filing for recall does not find the structure imagination needs",
+        paragraphs: [
+          "For each value of one factor, one partner of another is never experienced with it. Asked for the gist of that combination, does the memory construct it: land on an empty address whose read-out carries every factor? Two read-outs are compared, the paper's snap and the nearest of all 3,600 place codes, a read-out the paper's network does not have. Filed by the true factors, the memory constructs 0.95–1.00 of the combinations. Filed by the recall rule, it constructs 0.24–0.31, while recalling as well through the nearest read-out and 0.05 worse through the snap. Filed at random, none.",
+          "This is a failure of search, not of the objective. The error law strongly prefers the aligned filing (0.78 against 1.38). Recall accuracy barely distinguishes the two, so it cannot guide search there.",
+          "A recollection check separates imagining from remembering. Through the nearest read-out, familiarity tells recombined events from studied ones less than half as well as when empty states are not valid (d′ 3.1 against 7.5); recollection, which checks the cue's detail against the read-out, separates them almost perfectly (d′ 10.2; 4.6 through the snap).",
+          "A disclosure: these criteria were registered after the previous experiment had run on the same seeds, and one clause was registered on the decoder where a known gap vanishes. The table gives both read-outs; under the paper's own snap, four of seven bars are missed.",
+        ],
+        table: {
+          head: ["filed by", "recall", "constructs", "recombined events completed"],
+          rows: [
+            ["random", "0.430 / 0.961", "0.001 / 0.004", "0.002 / 0.002"],
+            ["the true factors (oracle)", "0.878 / 0.991", "0.948 / 0.999", "0.895 / 0.983"],
+            ["the recall rule, replayed", "0.832 / 0.997", "0.241 / 0.307", "0.204 / 0.267"],
+            ["the recall rule, annealed replay", "0.841 / 0.997", "0.190 / 0.262", "0.153 / 0.195"],
+            ["kNN on the stored patterns", "1.000", "0", "0"],
+          ],
+          caption: "Factored content, 10% flips, seeds 40–49. Each cell is the paper's snap / the nearest of all 3,600 place codes.",
+        },
+      },
+      {
+        heading: "The cliff is in the cue",
+        paragraphs: [
+          "Round 1 established the setting. With the paper's write rule, noisy recall collapses when the items stored reach the cue dimension: the pseudo-inverse's minimum sits at exactly P = Ns for every Ns and every kind of noise, and past it the scaffold snaps to a valid but wrong address. A noise-matched ridge removes the dip. None of this is new as mathematics; it is double descent. What is new is where it sits: in the cue map, at the right-hand edge of every capacity plot in the paper.",
+        ],
+        table: {
+          head: ["cue", "pseudo-inverse (the paper)", "noise-matched ridge", "Hebbian", "kNN"],
+          rows: [
+            ["clean", "1.000", "1.000", "0.699", "1.000"],
+            ["5% of bits flipped", "0.001", "0.851", "0.604", "1.000"],
+            ["10% flipped", "0.001", "0.668", "0.501", "1.000"],
+            ["20% flipped", "0.001", "0.303", "0.264", "1.000"],
+            ["25% of bits unknown", "0.001", "0.793", "0.575", "1.000"],
+            ["50% unknown", "0.000", "0.479", "0.386", "1.000"],
+          ],
+          caption: "Right address recovered at P = Ns. Mean over Ns = 500, 1,000 and 3,600; 10 seeds; the paper's placement.",
+        },
+      },
+      {
+        heading: "What did not survive",
+        negative: true,
+        list: [
+          {
+            term: "A memory that files itself",
+            detail:
+              "The first round-2 write-up said so. The rule is computed from more state than the memory holds, and through the network's own read-out it files below k-means.",
+          },
+          {
+            term: "Accuracy is silent about structure",
+            detail:
+              "Overstated. Through the paper's snap, the recall-filed memory recalls worse than the oracle-filed one at 20% flips. What holds is narrower: recall barely distinguishes the two, so it does not guide search there.",
+          },
+          {
+            term: "The price of imagination is recall",
+            detail:
+              "Treating never-stored states as valid costs nothing under aligned placement, with a decoder that admits every address. The apparent cost belonged to the paper's per-module snap. The price is false memory, for decoders that read place activity alone.",
+          },
+          {
+            term: "Consolidation discovers structure",
+            detail:
+              "No recall-driven procedure tried aligned the modules with the factors at full phase resolution. It happened when a granularity was supplied from outside.",
+          },
+        ],
+      },
+      {
+        heading: "Pre-registered criteria, round 2",
+        table: {
+          head: ["", "criterion (as registered)", "result", "through the paper's snap"],
+          rows: [
+            ["T1", "out of sample: mean error ≤ 0.02, ≥ 90% within 0.05", "pass: 100%", ""],
+            ["T2", "no condition family's mean error > 0.04", "pass: worst 0.029", ""],
+            ["T3", "on E4's rows: mean ≤ 0.02 and worst ≤ 0.06", "fail: worst 0.068", ""],
+            ["S1", "the rule ≥ k-means + 0.05 on every content", "pass: +0.051 to +0.145", ""],
+            ["S2", "the rule within 0.03 of the oracle", "fail", ""],
+            ["S3", "encoding alone ≥ random + 0.15", "pass: +0.21 to +0.26", ""],
+            ["I1", "construction: oracle ≥ 0.9 / 0.9 / 0.8, random ≤ 0.05 (nearest)", "pass", "miss: 0.817"],
+            ["I2", "every state valid costs the aligned memory ≤ 0.01 (nearest)", "pass", ""],
+            ["I3", "recall-filed: recall within 0.02, construction ≥ 0.4 lower (nearest)", "pass: −0.69 / −0.73", "miss on recall: −0.046"],
+            ["I4", "replaying an aligned memory for recall lowers construction", "pass: −0.10", ""],
+            ["I5", "r(construction, completion) ≥ 0.9; oracle completion ≥ 0.8 (nearest)", "pass: r = 0.998, partly by construction", "miss: 0.79 / 0.73"],
+            ["I6", "recollection d′ ≥ 5 while familiarity d′ ≤ 4 (nearest)", "pass: 10.2 and 3.1", "miss: 4.6 / 3.8"],
+            ["I7", "construction ≤ 0.05 at P = Nh; ≥ 0.9 with a 1% ridge", "pass: 0.003; 0.982", ""],
+          ],
+          caption: "As registered, 11 of 13 pass; under the paper's own snap, four of E5's seven would have missed. Seeds 40–49 and 30–32, none touched by a pilot. bench/criteria.py and bench/oos.py recompute every row.",
+        },
+      },
+    ],
+  },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -1869,6 +2316,7 @@ export const GEDANKEN_PUBLIC = false;
  */
 const ORDER: SystemSlug[] = [
   ...(GEDANKEN_PUBLIC ? (["gedanken"] as const) : []),
+  "loci",
   "engram",
   "whetstone",
   "spindle",

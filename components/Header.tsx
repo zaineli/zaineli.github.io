@@ -1,16 +1,17 @@
 import { profile } from "@/lib/content";
 
 const SECTIONS = [
-  { href: "/#systems", label: "Systems" },
+  { href: "/#how", label: "How I work" },
+  { href: "/#work", label: "Work" },
   { href: "/#papers", label: "Papers" },
-  { href: "/#said-no", label: "What said no" },
   { href: "/#record", label: "Record" },
   { href: "/#contact", label: "Contact" },
 ] as const;
 
 /**
- * The masthead: who, where, and five destinations. Not sticky, no scrolled
- * state, no toggle. Plain anchors, so it ships no JavaScript.
+ * Who, as what, and five destinations, on one line over a hairline. Not
+ * sticky, no scrolled state, no toggle. Plain anchors, so it ships no
+ * JavaScript.
  */
 export default function Header() {
   return (

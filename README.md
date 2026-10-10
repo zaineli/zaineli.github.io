@@ -1,42 +1,24 @@
-# Zain Ali — Portfolio
+# zainn.me
 
-Personal portfolio for **Zain Ali, Product Engineer**, built in the design language of
-[amanhsn.com](https://www.amanhsn.com/) (see [`amanhsn-design-spec.md`](./amanhsn-design-spec.md) for the full
-reverse-engineered spec this implements).
+Zain Ali's site: the work, each piece against the control that could have killed it, the rules he works by, the papers and the record.
 
 ## Stack
 
-- **Next.js** (App Router) + **React 19**
-- **Tailwind CSS v4** (CSS-first `@theme`, attribute-driven dark mode)
-- **Fonts:** Satoshi (Fontshare, primary sans) · Inter (uppercase labels) · Geist Mono (numerals) · DM Mono (micro-labels) · Geist (experience rows)
-- Custom inverting cursor, glass-on-scroll nav, scroll-reveal, light/dark theme toggle
+Next.js (App Router, static export) and React 19. No client JavaScript on the home page or the ledger; case pages hydrate only the results filter and Copy BibTeX. Fonts are self-hosted subsets: Newsreader in a display and a text cut, Hanken Grotesk for what is measured, Source Serif 4 behind them for arrows and Greek.
 
 ## Run
 
 ```bash
-pnpm install   # or npm install
-pnpm dev       # http://localhost:3000
-pnpm build     # production build
+pnpm install
+pnpm dev      # http://localhost:3000
+pnpm build    # next build, strip JS from static pages, check-once
+pnpm qa       # Playwright over out/: overflow, alignment, type budget, colour law, ledger
 ```
 
-## Where to edit
+## Where things live
 
-- **All content** lives in [`lib/content.ts`](./lib/content.ts) — profile/bio, experience, project cards, the
-  two case studies, and the playground list. Search for `[[ … ]]` and `TODO` markers for things only you can fill
-  (Omni-Agent metrics, personal lines, contact address).
-- **Design tokens** (colors, type scale, radii, motion) live in [`app/globals.css`](./app/globals.css).
-- **Add your CV** at `public/Zain_Ali_CV.pdf` and real project images in `public/` (see `public/README.md`).
-
-## Structure
-
-```
-app/
-  layout.tsx            fonts, theme bootstrap, nav + footer shell, cursor
-  page.tsx              home: hero · experience · selected work
-  about/                /about
-  playground/           /playground
-  work/omni-agent/      case study (draft — needs your input)
-  work/conoid/          case study (complete)
-components/             Nav, Footer, CursorFollow, ThemeToggle, ProjectCard, CaseStudyView, …
-lib/content.ts          ← edit your content here
-```
+- `lib/content.ts` — every word and number on the site. Systems, papers, the record, the rules, the ledger of what said no. `GEDANKEN_PUBLIC` and `PMR_PUBLIC` keep unreleased work out of the export entirely.
+- `lib/facts.ts` + `scripts/check-once.ts` — every fact on the home page appears exactly once; deep links resolve; banned and held strings appear nowhere.
+- `app/globals.css` — the design: tokens, the seven-size type scale, the row grammar, case pages, figures.
+- `scripts/qa.mjs` — what the design promises, checked in a real browser.
+- `docs/public-assets.md` — what `public/` serves and why.

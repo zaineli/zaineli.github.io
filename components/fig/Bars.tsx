@@ -50,7 +50,7 @@ export default function Bars({ spec }: { spec: FigureSpec & { kind: "bars" } }) 
     >
       {rows}
       {spec.reference ? (
-        <div className="reflab">
+        <div className={`reflab${spec.reference.value / spec.max > 0.5 ? " flip" : ""}`}>
           <span>{spec.reference.label}</span>
         </div>
       ) : null}

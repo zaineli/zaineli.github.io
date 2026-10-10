@@ -2,21 +2,26 @@ import { profile } from "@/lib/content";
 import { portraitPlaceholder } from "@/lib/portrait";
 
 /**
- * The title block. The conviction set like a paper's title — the doubt in
- * the display cut at book weight, the conviction at semibold — his face
- * beside it, and under a rule his two standing sentences: how he works and
- * where he lives. Nothing here is a claim that needs a number; the numbers
- * start in the next section.
+ * The opening: his own three sentences about what machines cannot do, set
+ * as one statement, the last word in italic and its full stop in oxblood.
+ * Under a hairline, what he is building; beside it, the bet he is known
+ * for and what he does about it. His face to the right, with where he
+ * lives in his own words.
  */
 export default function Hero() {
-  const [a, b, c] = profile.manifestoLines;
+  const [a, b, c] = profile.opening;
   return (
-    <section className="hero g12" aria-labelledby="thesis">
-      <h1 className="thesis" id="thesis">
-        <span>{a}</span> <span>{b}</span> <span className="s2">{c}</span>
+    <section className="hero g12" aria-labelledby="opening">
+      <h1 className="opening" id="opening">
+        <span>{a}</span> <span>{b}</span>{" "}
+        <span>
+          {c} <em>{profile.openingWord}</em>
+          <span className="stop">.</span>
+        </span>
       </h1>
-      <figure className="portrait" style={{ backgroundImage: `url(${portraitPlaceholder})` }}>
+      <figure className="portrait">
         <img
+          style={{ backgroundImage: `url(${portraitPlaceholder})` }}
           src="/profile.webp"
           width={900}
           height={1015}
@@ -24,10 +29,18 @@ export default function Hero() {
           fetchPriority="high"
           decoding="async"
         />
+        <figcaption>{profile.lives}</figcaption>
       </figure>
       <div className="stand">
-        <p className="method">{profile.method}</p>
-        <p className="lives">{profile.lives}</p>
+        <p className="building">{profile.building}</p>
+        <div className="bet">
+          <p className="claim">
+            {profile.manifesto.split(/(?<=\.) /).map((line) => (
+              <span key={line}>{line} </span>
+            ))}
+          </p>
+          <p className="how">{profile.bet}</p>
+        </div>
       </div>
     </section>
   );

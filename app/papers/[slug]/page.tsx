@@ -2,6 +2,7 @@ import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { publications, shownLedger, systems, type Publication, type SystemSection } from "@/lib/content";
 import { slugify } from "@/lib/slug";
+import { smart } from "@/lib/typo";
 import CaseSection from "@/components/case/CaseSection";
 import CopyBib from "@/components/case/CopyBib";
 import PrevNext from "@/components/case/PrevNext";
@@ -106,7 +107,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
             <a className="page" href={paper.media.pdf} target="_blank" rel="noreferrer noopener" aria-label={`${paper.shortTitle} preprint, PDF`}>
               <img
                 src={paper.media.page1.replace(".webp", "-360.webp")}
-                srcSet={`${paper.media.page1.replace(".webp", "-360.webp")} 360w, ${paper.media.page1.replace(".webp", "-660.webp")} 660w`}
+                srcSet={`${paper.media.page1.replace(".webp", "-360.webp")} 360w, ${paper.media.page1.replace(".webp", "-660.webp")} 660w, ${paper.media.page1} 824w`}
                 sizes="180px"
                 width={824}
                 height={1067}
@@ -124,7 +125,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
       <section className="cs g12" id="abstract">
         <h2>Abstract</h2>
         <div className="body">
-          <p>{paper.abstract}</p>
+          <p>{smart(paper.abstract)}</p>
         </div>
       </section>
 

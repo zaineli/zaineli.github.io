@@ -14,53 +14,37 @@ import {
   experience,
   listings,
   negativeCount,
+  priors,
   profile,
   publications,
-  shownLedger,
-  shownTagline,
+  rules,
+  rulesLine,
   systems,
-  type FigureSpec,
 } from "./content.ts";
-
-/** A signed value as the figures print it (components/fig/scale.ts). */
-const signed = (v: number, digits = 3) => `${v < 0 ? "−" : ""}${Math.abs(v).toFixed(digits)}`;
-
-/** The printed values of one home figure: what the reader sees at bar ends. */
-const figureFacts = (fig: FigureSpec): string[] => {
-  switch (fig.kind) {
-    case "bars":
-      return fig.bars.filter((b) => !b.hideValue).map((b) => b.display ?? String(b.value));
-    case "dots":
-      return fig.points.map((p) => signed(p.value));
-    case "pairs":
-      return fig.pairs.flatMap((p) => [p.a.display, p.b.display, ...(p.ratio ? [p.ratio] : [])]);
-    case "diverging":
-      return fig.series.map((s) => s.display ?? String(s.primary));
-    case "lines":
-      return [];
-  }
-};
 
 const facts: string[] = [];
 
-// The masthead and the title block
-facts.push(profile.role, profile.manifesto, profile.method, profile.lives);
+// The masthead and the opening
+facts.push(...profile.opening, profile.openingWord, profile.lives);
+facts.push(profile.building, profile.manifesto, profile.bet);
 
-// Systems: each row's tagline, field, number, caption, figure values, line and conditions
+// Work: each row's field, question, number, caption, turn and what said no
+facts.push(profile.workLine);
 for (const s of systems) {
-  facts.push(shownTagline(s), s.thread, s.lead.value, s.lead.label, s.homeLine, s.spec);
+  facts.push(s.thread, s.question, s.lead.value, s.lead.label, s.no);
   if (s.lead.after) facts.push(s.lead.after);
-  facts.push(...figureFacts(s.homeFigure));
 }
+
+// How he works: the line, every rule, and the tally
+facts.push(rulesLine, ...rules.map((r) => r.text));
+facts.push(String(negativeCount), "results on this site said no. Each is listed with what said it.");
 
 // Papers listed by title only while their manuscript is not public
 for (const l of listings) facts.push(l.title, l.subtitle, l.status);
 
-// The paper: title, the split sentence, the pair, the status line
+// The paper: title, status, and the pair
 for (const p of publications) {
   facts.push(p.title, p.status);
-  if (p.claim) facts.push(p.claim.lead, p.claim.rest);
-  if (p.limit) facts.push(p.limit);
   const pairs = p.figures.find((f) => f.kind === "pairs");
   if (pairs && pairs.kind === "pairs") {
     const last = pairs.pairs[pairs.pairs.length - 1];
@@ -68,35 +52,27 @@ for (const p of publications) {
   }
 }
 
-// What said no: the line, the count, every shown number and quote
-facts.push(profile.ledgerLine, String(negativeCount));
-for (const e of [...systems.flatMap((s) => shownLedger(s.ledger)), ...publications.flatMap((p) => shownLedger(p.ledger ?? []))]) {
-  facts.push(e.term);
-  if (e.number) facts.push(e.number);
-  if (e.quote) facts.push(e.quote.replace(/^“|”$/g, ""));
-}
-
-// The record: one number (or his gloss) per role
+// The record: one number (or his gloss) per role, the degree and the ranks
 facts.push(education.degree);
 for (const role of experience) {
-  if (role.gloss) facts.push(role.gloss);
-  if (role.glossLine) facts.push(role.glossLine);
   const o = role.outcomes[0];
   if (o?.value) facts.push(o.value, o.label);
 }
+for (const p of priors.filter((x) => x.home)) facts.push(p.rank);
 
-// The foot
-facts.push(profile.discipline);
+// Contact and the foot
+facts.push(profile.closer, profile.aside);
 
 /** Each string occurs exactly once in the visible text of out/index.html. */
 export const homeFacts: string[] = Array.from(new Set(facts.filter((f) => f.length > 0)));
 
 /** Strings that may occur up to this many times: chrome, not facts. */
 export const allowlist: Record<string, number> = {
-  // the masthead, the paper's author line, the footer
+  // the masthead, the paper's author line, the portrait's alt, the footer
   [profile.name]: 3,
   // the masthead's role line and the first record row
   [profile.company]: 2,
+  [profile.role]: 2,
   // the paper's affiliation, the record row, the entry-test prior
   NUST: 3,
 };

@@ -1,6 +1,6 @@
 /**
- * The social card: the real title block — thesis, portrait, the two standing
- * sentences — captured from the built site, so what a link preview shows is
+ * The social card: the real opening — the three lines, the portrait, the bet
+ * — captured from the built site, so what a link preview shows is
  * what the page is. Serves out/ itself; run after `pnpm build`.
  */
 import { createServer } from "node:http";
@@ -27,9 +27,9 @@ await page.goto(`http://localhost:${PORT}/`, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
 // The sheet at 1200 wide, margins included, down to just under the title block.
 const box = await page.evaluate(() => {
-  const t = document.querySelector(".thesis").getBoundingClientRect();
+  const t = document.querySelector(".opening").getBoundingClientRect();
   const s = document.querySelector(".stand").getBoundingClientRect();
-  const p = document.querySelector(".portrait").getBoundingClientRect();
+  const p = document.querySelector(".portrait img").getBoundingClientRect();
   return { top: t.top, bottom: Math.max(s.bottom, p.bottom) };
 });
 const y = Math.max(0, Math.round(box.bottom + 28 - 630));

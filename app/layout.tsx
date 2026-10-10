@@ -5,22 +5,28 @@ import { metaDescription, profile } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// Two families, one rule: the serif carries everything a reader reads (the
-// thesis, names, his sentences, the write-ups); the grotesk carries
-// everything a reader measures (numbers, labels, figures, tables). Both are
-// self-hosted subsets cut by pyftsubset, because Google's latin subset drops
-// → (printed a dozen times) and ≥ ≈ Δ − on the case pages.
-//
-// Source Serif 4 is instanced to wght 400–650 and opsz 16–60, so the thesis
-// gets the display cut and the prose gets the text cut from one file; the
-// italic is a single static instance at text size, used only for his quoted
-// sentences.
-const sourceSerif = localFont({
+// One voice, two optical sizes, and a grotesk for what is measured.
+// Newsreader is cut twice from its variable master: a display instance
+// (opsz 60, light to medium) for the opening, the names and the numbers,
+// and a text instance (opsz 16) for every sentence a reader reads. Both are
+// self-hosted subsets. Newsreader has no arrows, no Δ and no Greek, so
+// Source Serif 4 stands behind it — loaded only on a page that prints one.
+const display = localFont({
   src: [
-    { path: "./fonts/SourceSerif4-var.woff2", weight: "400 650", style: "normal" },
-    { path: "./fonts/SourceSerif4-Italic.woff2", weight: "420", style: "italic" },
+    { path: "./fonts/NR-Display.woff2", weight: "300 500", style: "normal" },
+    { path: "./fonts/NR-DisplayItalic.woff2", weight: "300 400", style: "italic" },
   ],
-  variable: "--font-ss4",
+  variable: "--font-nrd",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
+});
+
+const text = localFont({
+  src: [
+    { path: "./fonts/NR-Text.woff2", weight: "400 600", style: "normal" },
+    { path: "./fonts/NR-TextItalic.woff2", weight: "400", style: "italic" },
+  ],
+  variable: "--font-nrt",
   display: "swap",
   adjustFontFallback: "Times New Roman",
 });
@@ -31,6 +37,27 @@ const hanken = localFont({
   weight: "100 900",
   display: "swap",
   adjustFontFallback: "Arial",
+});
+
+// Arrows come from the grotesk at the weight of the text around them, so
+// "45 → 13" in a light numeral gets a light arrow.
+const arrows = localFont({
+  src: "./fonts/HankenGrotesk-var.woff2",
+  variable: "--font-arw",
+  weight: "100 900",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
+  declarations: [{ prop: "unicode-range", value: "U+2190-21FF" }],
+});
+
+const backstop = localFont({
+  src: "./fonts/SourceSerif4-var.woff2",
+  variable: "--font-ss4",
+  weight: "400 650",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
 const title = `${profile.name} · ${profile.role}, ${profile.company}`;
@@ -47,16 +74,15 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title, description: metaDescription },
 };
 
-// One sheet, light only. An unseen system-dark theme is what killed an
-// earlier round; there is no dark variant to fall into.
+// One sheet, light only.
 export const viewport: Viewport = {
-  themeColor: "#fbfaf7",
+  themeColor: "#fafaf8",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sourceSerif.variable} ${hanken.variable}`}>
+    <html lang="en" className={`${display.variable} ${text.variable} ${hanken.variable} ${arrows.variable} ${backstop.variable}`}>
       <body>
         <a className="skip" href="#main">
           Skip to content

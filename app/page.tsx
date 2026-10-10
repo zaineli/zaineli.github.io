@@ -1,26 +1,25 @@
 import Hero from "@/components/sections/Hero";
-import Systems from "@/components/sections/Systems";
+import Work from "@/components/sections/Work";
+import Rules from "@/components/sections/Rules";
 import Papers from "@/components/sections/Papers";
-import SaidNo from "@/components/sections/SaidNo";
 import Record from "@/components/sections/Record";
 import Contact from "@/components/sections/Contact";
 
 /**
- * AGAINST THE CONTROL. A reader from a research lab does not trust a
- * headline number; they look for what it was measured against. Every piece
- * of work here has one — a tuned hybrid, a held-out gate, a uniform-length
- * control, an oracle, static roles — so the page is set the way such a
- * reader already reads: a title, a results table, the papers, the errata,
- * the author's record. Serif for what is read, grotesk for what is
- * measured, one red for what said no.
+ * THE GUESS. One voice on one sheet: what he thinks machines cannot do and
+ * what he is building about it, the rules he works by, the work that keeps
+ * them — each piece against the control that could have killed it — the
+ * papers, the record.
+ * Hairlines, a serif in two optical sizes, a grotesk for what is measured,
+ * and one colour, which means one thing: the result said no.
  */
 export default function Home() {
   return (
     <>
       <Hero />
-      <Systems />
+      <Rules />
+      <Work />
       <Papers />
-      <SaidNo />
       <Record />
       <Contact />
     </>

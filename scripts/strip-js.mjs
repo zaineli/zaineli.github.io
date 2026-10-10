@@ -7,7 +7,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
-const PAGES = ["out/index.html", "out/404.html", "out/404/index.html"];
+const PAGES = ["out/index.html", "out/said-no/index.html", "out/404.html", "out/404/index.html"];
 let stripped = 0;
 for (const page of PAGES) {
   if (!existsSync(page)) continue;

@@ -1,5 +1,6 @@
 import type { FigureSpec, LedgerEntry, SystemSection } from "@/lib/content";
 import { slugify } from "@/lib/slug";
+import { smart } from "@/lib/typo";
 import Figure from "../fig/Figure";
 
 export interface Note {
@@ -55,7 +56,7 @@ export default function CaseSection({
                 <tr>
                   {section.table.head.map((h, i) => (
                     <th key={`${h}-${i}`} scope="col" {...(h === own ? { "data-own": "" } : {})}>
-                      {h}
+                      {smart(h)}
                     </th>
                   ))}
                 </tr>
@@ -65,25 +66,25 @@ export default function CaseSection({
                   <tr key={row.join("|")}>
                     {row.map((cell, i) => (
                       <td key={`${cell}-${i}`} {...(section.table!.head[i] === own ? { "data-own": "" } : {})}>
-                        {cell}
+                        {smart(cell)}
                       </td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
-            {section.table.caption ? <p className="tcap">{section.table.caption}</p> : null}
+            {section.table.caption ? <p className="tcap">{smart(section.table.caption)}</p> : null}
           </div>
         ) : null}
 
-        {section.paragraphs?.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+        {section.paragraphs?.map((p) => <p key={p.slice(0, 40)}>{smart(p)}</p>)}
 
         {section.list?.length ? (
           <dl>
             {section.list.map((item) => (
               <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.detail}</dd>
+                <dt>{smart(item.term)}</dt>
+                <dd>{smart(item.detail)}</dd>
               </div>
             ))}
           </dl>
@@ -94,14 +95,14 @@ export default function CaseSection({
         <aside className="note" aria-label={`${neg ? "Said no" : "Note"}: ${section.heading}`}>
           {ledger.map((e) => (
             <div key={e.id} className="item" data-ink="neg">
-              <p className="t">{e.term}</p>
+              <p className="t">{smart(e.term)}</p>
               {e.number ? <p className="x">{e.number}</p> : null}
               {e.kind === "hypothesis" && e.expected ? (
                 <>
                   <p className="ex">
-                    <s>{e.expected}</s>
+                    <s>{smart(e.expected)}</s>
                   </p>
-                  {e.measured ? <p className="me">{e.measured}</p> : null}
+                  {e.measured ? <p className="me">{smart(e.measured)}</p> : null}
                 </>
               ) : null}
             </div>
