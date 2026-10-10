@@ -1,34 +1,31 @@
 import { profile } from "@/lib/content";
 
 const SECTIONS = [
-  { href: "/#how", label: "How I work" },
-  { href: "/#work", label: "Work" },
-  { href: "/#papers", label: "Papers" },
-  { href: "/#record", label: "Record" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/#paper", label: "Paper" },
+  { href: "/#experience", label: "Experience" },
   { href: "/#contact", label: "Contact" },
 ] as const;
 
-/**
- * Who, as what, and five destinations, on one line over a hairline. Not
- * sticky, no scrolled state, no toggle. Plain anchors, so it ships no
- * JavaScript.
- */
+/** Name and role on the left, four destinations on the right. Plain anchors, no JavaScript. */
 export default function Header() {
   return (
-    <header className="top g12">
-      <a className="who" href="/">
-        {profile.name}
-      </a>
-      <p className="role">
-        {profile.role}, <span className="nw">{profile.company}</span>
-      </p>
-      <nav aria-label="Sections">
-        {SECTIONS.map((s) => (
-          <a key={s.href} href={s.href}>
-            {s.label}
-          </a>
-        ))}
-      </nav>
+    <header className="wrap top">
+      <div className="grid">
+        <a className="id" href="/">
+          <span className="id-name">{profile.name}</span>
+          <span className="id-role">
+            {profile.role} at {profile.company}
+          </span>
+        </a>
+        <nav className="nav" aria-label="Sections">
+          {SECTIONS.map((s) => (
+            <a key={s.href} href={s.href}>
+              {s.label}
+            </a>
+          ))}
+        </nav>
+      </div>
     </header>
   );
 }

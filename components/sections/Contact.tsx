@@ -1,35 +1,28 @@
-import { links, profile } from "@/lib/content";
+import { links } from "@/lib/content";
+import Arrow from "@/components/ui/Arrow";
 
-const ORDER = ["Email", "GitHub", "LinkedIn"];
-
-/** The last word, then three ways to reach him. */
+/** The email, large, and the two other places to find him. */
 export default function Contact() {
-  const shown = ORDER.map((label) => links.find((l) => l.label === label)).filter(
-    (l): l is (typeof links)[number] => l !== undefined,
-  );
-  const where = (href: string) => href.replace(/^mailto:/, "").replace(/^https?:\/\/(www\.)?/, "");
-
+  const email = links.find((l) => l.label === "Email")!;
+  const rest = links.filter((l) => l.label !== "Email");
   return (
-    <section className="sec contact" id="contact" aria-labelledby="h-contact">
-      <header className="sh g12">
-        <h2 id="h-contact">Contact</h2>
-      </header>
-      <div className="g12">
-        <p className="closer">
-          {profile.closer.split(/(?<=\.) /).map((line) => (
-            <span key={line}>{line} </span>
-          ))}
-        </p>
-      </div>
-      <div className="ways g12">
-        {shown.map((l) => (
-          <p key={l.label} className="way">
-            <span className="k">{l.label}</span>
-            <a className="u" href={l.href} {...(l.external ? { target: "_blank", rel: "noreferrer noopener" } : {})}>
-              {where(l.href)}
-            </a>
-          </p>
-        ))}
+    <section id="contact" className="wrap sec contact" aria-labelledby="h-contact">
+      <div className="grid">
+        <h2 className="sec-title" id="h-contact">
+          Contact
+        </h2>
+        <div className="sec-body">
+          <a className="mail" href={email.href}>
+            {email.href.replace(/^mailto:/, "")}
+          </a>
+          <div className="actions">
+            {rest.map((l) => (
+              <a key={l.label} className="btn" href={l.href} target="_blank" rel="noreferrer noopener">
+                {l.label} <Arrow />
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

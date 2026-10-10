@@ -1,26 +1,24 @@
 import Hero from "@/components/sections/Hero";
-import Work from "@/components/sections/Work";
-import Rules from "@/components/sections/Rules";
+import Projects from "@/components/sections/Projects";
 import Papers from "@/components/sections/Papers";
 import Record from "@/components/sections/Record";
+import Rules from "@/components/sections/Rules";
 import Contact from "@/components/sections/Contact";
 
 /**
- * THE GUESS. One voice on one sheet: what he thinks machines cannot do and
- * what he is building about it, the rules he works by, the work that keeps
- * them — each piece against the control that could have killed it — the
- * papers, the record.
- * Hairlines, a serif in two optical sizes, a grotesk for what is measured,
- * and one colour, which means one thing: the result said no.
+ * Round 19, the direction he picked: a clean, white, modern page in plain
+ * words. Who he is and what he builds, the projects with one result each,
+ * the paper, where he has worked and studied, how he works, how to reach
+ * him. One family (Geist), soft grey cards, one orange dot.
  */
 export default function Home() {
   return (
     <>
       <Hero />
-      <Rules />
-      <Work />
+      <Projects />
       <Papers />
       <Record />
+      <Rules />
       <Contact />
     </>
   );

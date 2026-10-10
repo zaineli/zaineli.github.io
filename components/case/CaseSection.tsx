@@ -38,7 +38,7 @@ export default function CaseSection({
   const neg = section.negative === true || ledger.length > 0 || notes.some((n) => n.neg);
 
   return (
-    <section id={id} className={`cs g12${neg ? " neg" : ""}`}>
+    <section id={id} className={`cs${neg ? " neg" : ""}`}>
       <h2>{section.heading}</h2>
       <div className="body">
         {figures.map((spec) => (
@@ -92,7 +92,7 @@ export default function CaseSection({
       </div>
 
       {hasMargin ? (
-        <aside className="note" aria-label={`${neg ? "Said no" : "Note"}: ${section.heading}`}>
+        <aside className="note" aria-label={`${neg ? "Didn’t work" : "Note"}: ${section.heading}`}>
           {ledger.map((e) => (
             <div key={e.id} className="item" data-ink="neg">
               <p className="t">{smart(e.term)}</p>

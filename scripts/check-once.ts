@@ -15,7 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allowlist, bannedPatterns, bannedStrings, heldStrings, homeFacts } from "../lib/facts.ts";
-import { negativeCount, profile, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems } from "../lib/content.ts";
+import { negativeCount, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems } from "../lib/content.ts";
 import { slugify } from "../lib/slug.ts";
 
 const OUT = "out";
@@ -99,11 +99,11 @@ for (const [phrase, allowed] of Object.entries(allowlist)) {
 // 2. the counts are static, and the static pages ship no script
 const saidPath = `${OUT}/said-no/index.html`;
 const saidHtml = existsSync(saidPath) ? readFileSync(saidPath, "utf8") : "";
-if (!saidHtml.includes(`data-sr="">${negativeCount} negative results<`)) {
-  failures.push(`the ledger numeral ${negativeCount} is not static on /said-no/, or its screen-reader text is missing`);
+if (!new RegExp(`>${negativeCount}</span>\\s*(<!-- -->)?\\s*things`).test(saidHtml)) {
+  failures.push(`the count ${negativeCount} is not static on /said-no/`);
 }
-if (!new RegExp(`>${negativeCount}</span>\\s*(<!-- -->)?results on this site said no`).test(homeHtml)) {
-  failures.push(`the home tally ${negativeCount} is not static`);
+if (!new RegExp(`See all (<!-- -->)?${negativeCount}`).test(homeHtml)) {
+  failures.push(`the home count ${negativeCount} is not static`);
 }
 for (const [path, html] of [[homePath, homeHtml], [saidPath, saidHtml]]) {
   if (/<script\b/i.test(html)) failures.push(`${path} ships a <script> (strip-js did not run?)`);

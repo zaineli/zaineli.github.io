@@ -1,24 +1,18 @@
 /**
  * Visual and structural QA over the built export. Serves out/, then checks
- * what THE GUESS promises:
+ * what the round-19 design promises:
  *   - no horizontal overflow at any width from 360 to 1920, on every route;
  *   - nothing plays by itself: no animations, no transitions, no autoplay,
  *     nothing sticky or fixed;
- *   - the first screen: the opening, the portrait and what he is building
- *     inside 1440×900; the opening inside 390×844;
- *   - the portrait's top on the opening's cap line, at ≥1024;
- *   - five shared column starts on the home page (1, 2, 4, 9 and the right
- *     edge), at ≥1024, and one left edge at every width;
- *   - three faces and a budget: Newsreader display, Newsreader text and
- *     Hanken Grotesk only; at most 8 sizes and 2 weights a face on the home
- *     page; nothing under 13px; no uppercase transforms, no positive
- *     tracking;
- *   - the colour law: oxblood only on the opening's full stop and on what
- *     said no;
- *   - the portrait is colour and not lazy;
- *   - the ledger count agrees on both pages, with its rows and with every
- *     "N said no";
- *   - case pages have one h1, a figure and a plate;
+ *   - the first screen at 1440×900 holds the headline, the buttons and the
+ *     photo; at 390 it holds the headline;
+ *   - one family (Geist) for every word; nothing under 12.5px; no uppercase
+ *     transforms;
+ *   - the orange is a dot: on the home page it touches only the headline's
+ *     full stop and the "now" dots;
+ *   - every project card opens its write-up and links its code;
+ *   - the count of what didn't work agrees on both pages and with its rows;
+ *   - write-ups have one h1, a figure and a plain summary;
  *   - hover changes no content.
  * Screenshots land in scripts/.qa/; the exit code is what matters.
  */
@@ -69,7 +63,7 @@ const browser = await chromium.launch();
 // The routes follow the content model, so a withheld system (GEDANKEN_PUBLIC) is neither checked nor expected.
 const ROUTES = ["/", "/said-no/", ...systems.map((s) => `/systems/${s.slug}/`), ...publications.map((p) => `/papers/${p.slug}/`)];
 const CASES = ROUTES.filter((r) => r.startsWith("/systems/") || r.startsWith("/papers/"));
-const SIGNAL = ["rgb(122, 30, 44)"];
+const ORANGE = ["rgb(255, 79, 0)", "rgb(194, 65, 12)"];
 
 async function open(path, width, height = 900) {
   const ctx = await browser.newContext({ viewport: { width, height } });
@@ -115,7 +109,7 @@ for (const path of ROUTES) {
   const { ctx, page } = await open("/", 1440, 900);
   const f = await page.evaluate(() => {
     const b = (sel) => document.querySelector(sel).getBoundingClientRect().bottom;
-    return { opening: b(".opening"), portrait: b(".portrait img"), building: b(".stand .building") };
+    return { headline: b(".hero h1"), buttons: b(".hero .actions"), photo: b(".portrait img") };
   });
   for (const [k, v] of Object.entries(f)) if (v > 900) fail(`/ @1440×900: ${k} ends at ${Math.round(v)}px, below the fold`);
   await page.screenshot({ path: `${SHOTS}/home-1440-fold.png`, timeout: 120000 });
@@ -124,9 +118,8 @@ for (const path of ROUTES) {
 }
 {
   const { ctx, page } = await open("/", 390, 844);
-  const b = await page.evaluate(() => document.querySelector(".opening").getBoundingClientRect().bottom);
-  if (b > 844) fail(`/ @390: the opening misses the first screen (${Math.round(b)})`);
-  await page.screenshot({ path: `${SHOTS}/home-390-fold.png`, timeout: 120000 });
+  const b = await page.evaluate(() => document.querySelector(".hero h1").getBoundingClientRect().bottom);
+  if (b > 844) fail(`/ @390: the headline misses the first screen (${Math.round(b)})`);
   await page.screenshot({ path: `${SHOTS}/home-390.png`, fullPage: true, timeout: 120000 });
   await ctx.close();
 }
@@ -136,136 +129,74 @@ for (const width of [1024, 768]) {
   await ctx.close();
 }
 
-/* ---- 4. the portrait on the cap line ------------------------------ */
-for (const width of [1024, 1280, 1440, 1920]) {
-  const { ctx, page } = await open("/", width);
-  // The opening is set with text-box: trim-both cap alphabetic, so its box
-  // starts on the cap line of its first letter.
-  const g = await page.evaluate(() => ({
-    pt: document.querySelector(".portrait img").getBoundingClientRect().top,
-    cap: document.querySelector(".opening").getBoundingClientRect().top,
-  }));
-  if (width >= 1024 && Math.abs(g.pt - g.cap) > 1) fail(`/ @${width}: portrait top ${Math.round(g.pt)} is not on the cap line ${Math.round(g.cap)}`);
-  await ctx.close();
-}
-
-/* ---- 5. shared column starts -------------------------------------- */
-for (const width of [1920, 1440, 1024, 768, 375]) {
-  const { ctx, page } = await open("/", width);
-  const edges = await page.evaluate(() => {
-    const at = (sel, side = "left") => {
-      const els = [...document.querySelectorAll(sel)].filter((el) => getComputedStyle(el).display !== "none");
-      if (!els.length) return [[sel, null]];
-      return els.map((el) => [sel, Math.round(el.getBoundingClientRect()[side])]);
-    };
-    return {
-      left: [".top .who", ".opening", ".stand", ".sh h2", ".nm", ".foot .who", ".closer", ".way:first-child"].flatMap((s) => at(s)),
-      one: [".top .who", ".opening", ".stand", ".sh h2", ".nm", ".rule", ".st.wide", ".foot .who", ".closer"].flatMap((s) => at(s)),
-      four: [".top .role", ".sh .sl", ".w .st", ".rec .st"].flatMap((s) => at(s)),
-      nine: [".ms", ".src", ".way:nth-child(3)"].flatMap((s) => at(s)),
-      right: [".top nav", ".portrait", ".foot .aside", ".sh"].flatMap((s) => at(s, "right")),
-    };
-  });
-  const groups = width >= 1024 ? ["one", "four", "right"] : ["left"];
-  for (const k of groups) {
-    const list = edges[k];
-    const missing = list.filter(([, x]) => x === null).map(([s]) => s);
-    if (missing.length) fail(`/ @${width}: missing selector(s) ${missing.join(", ")}`);
-    const xs = list.filter(([, x]) => x !== null).map(([, x]) => x);
-    if (Math.max(...xs) - Math.min(...xs) > 1) {
-      const seen = [...new Map(list.map(([s, x]) => [`${s}=${x}`, 1])).keys()];
-      fail(`/ @${width}: the "${k}" edge disagrees: ${seen.join(" ")}`);
-    }
-  }
-  if (width >= 1024) {
-    // column 9 holds the numbers and the sources; the bet sits on column 5 of the stand's own nine.
-    const nine = edges.nine.map(([, x]) => x);
-    if (Math.max(...nine) - Math.min(...nine) > 1) fail(`/ @${width}: column 9 disagrees: ${edges.nine.map(([s, x]) => `${s}=${x}`).join(" ")}`);
-  }
-  await ctx.close();
-}
-
-/* ---- 6–8. type, colour, portrait on every route ------------------- */
+/* ---- 4. one family, the dot law, the cards -------------------------- */
 for (const path of ROUTES) {
   for (const width of [1440, 390]) {
     const { ctx, page } = await open(path, width);
-    const r = await page.evaluate((SIGNAL) => {
-      // the arrows face (unicode-range U+2190–21FF) heads every serif stack; the face that sets the words is the next one
-      const first = (el) => getComputedStyle(el).fontFamily.split(",").map((f) => f.trim().replace(/['"]/g, "")).find((f) => !/arrows/i.test(f));
-      const DISPLAY = first(document.querySelector(".opening, .cname, .lost h1"));
-      const TEXT = first(document.body);
-      const SANS = first(document.querySelector(".top .role"));
-      const out = { family: [], small: [], upper: [], tracking: [], red: [], sizes: {}, weights: {} };
+    const r = await page.evaluate((ORANGE) => {
+      const fam = (el) => getComputedStyle(el).fontFamily.split(",")[0].trim().replace(/['"]/g, "");
+      const BODY = fam(document.body);
+      const out = { family: [], small: [], upper: [], orange: [] };
       for (const el of document.querySelectorAll("body *")) {
-        if (el.closest("[data-sr], .sr, .skip, svg defs, script, style")) continue;
+        if (el.closest("[data-sr], .sr, .skip, svg defs, script, style, pre")) continue;
         const cs = getComputedStyle(el);
         if (cs.display === "none" || cs.visibility === "hidden") continue;
         const ownText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
         if (ownText) {
-          const fam = first(el);
-          if (![DISPLAY, TEXT, SANS].includes(fam)) out.family.push(`${el.tagName}.${el.className?.baseVal ?? el.className}: ${cs.fontFamily}`);
-          const size = parseFloat(cs.fontSize);
-          if (size < 12.5) out.small.push(`${el.tagName}.${el.className?.baseVal ?? el.className} ${size}px "${el.textContent.trim().slice(0, 30)}"`);
+          if (fam(el) !== BODY) out.family.push(`${el.tagName}.${el.className?.baseVal ?? el.className}: ${cs.fontFamily}`);
+          if (parseFloat(cs.fontSize) < 12.5) out.small.push(`${el.tagName}.${el.className?.baseVal ?? el.className} ${cs.fontSize}`);
           if (cs.textTransform === "uppercase") out.upper.push(el.className || el.tagName);
-          if (parseFloat(cs.letterSpacing) > 0) out.tracking.push(el.className || el.tagName);
-          if (!el.closest("figure, .tw, .schem")) {
-            out.sizes[cs.fontSize] = 1;
-            (out.weights[fam] ??= {})[cs.fontWeight] = 1;
-          }
         }
-        const paint = [cs.color, cs.backgroundColor, cs.borderTopColor, cs.borderLeftColor, cs.borderRightColor, cs.borderBottomColor, cs.backgroundImage, cs.boxShadow, cs.fill, cs.stroke].join(" ");
-        if (!SIGNAL.some((c) => paint.includes(c))) continue;
-        const visible =
-          (SIGNAL.some((c) => cs.color.includes(c)) && ownText) ||
-          SIGNAL.some((c) => cs.backgroundColor.includes(c) || cs.backgroundImage.includes(c) || cs.boxShadow.includes(c)) ||
-          ["Top", "Right", "Bottom", "Left"].some((k) => SIGNAL.some((c) => cs[`border${k}Color`].includes(c)) && parseFloat(cs[`border${k}Width`]) > 0) ||
-          (el instanceof SVGElement && SIGNAL.some((c) => (cs.fill + cs.stroke).includes(c)));
-        if (visible && !el.closest('[data-ink="neg"], .opening .stop, .cs.neg, .note, .lg:target, .cs:target')) out.red.push(`${el.tagName}.${el.className?.baseVal ?? el.className}`);
+        if (location.pathname === "/") {
+          const paint = [cs.color, cs.backgroundColor, cs.borderTopColor, cs.boxShadow, cs.textDecorationColor].join(" ");
+          const hit = ORANGE.some((c) => (ownText && cs.color.includes(c)) || cs.backgroundColor.includes(c));
+          if (hit && !el.matches(".stop, .dot")) out.orange.push(`${el.tagName}.${el.className}`);
+          void paint;
+        }
       }
-      const img = document.querySelector(".portrait img");
-      const portrait = img ? { filter: getComputedStyle(img).filter, loading: img.getAttribute("loading") } : null;
-      const fontOk = [DISPLAY, TEXT, SANS].every((f) => document.fonts.check(`16px "${f}"`)) && new Set([DISPLAY, TEXT, SANS]).size === 3;
-      return { ...out, sizes: Object.keys(out.sizes), weights: Object.fromEntries(Object.entries(out.weights).map(([k, v]) => [k, Object.keys(v)])), portrait, fontOk, fams: `${DISPLAY} / ${TEXT} / ${SANS}` };
-    }, SIGNAL);
+      return { ...out, BODY, geist: /geist/i.test(BODY) && document.fonts.check(`16px "${BODY}"`) };
+    }, ORANGE);
     const cap = (a) => a.slice(0, 6).join(" | ");
-    if (!r.fontOk) fail(`${path} @${width}: faces "${r.fams}" are not three loaded families`);
-    if (r.family.length) fail(`${path} @${width}: a fourth font family: ${cap(r.family)}`);
-    if (r.small.length) fail(`${path} @${width}: text below the floor: ${cap(r.small)}`);
+    if (!r.geist) fail(`${path} @${width}: body family "${r.BODY}" is not the loaded Geist`);
+    if (r.family.length) fail(`${path} @${width}: a second font family: ${cap(r.family)}`);
+    if (r.small.length) fail(`${path} @${width}: text below 12.5px: ${cap(r.small)}`);
     if (r.upper.length) fail(`${path} @${width}: uppercase transform on ${cap(r.upper)}`);
-    if (r.tracking.length) fail(`${path} @${width}: positive tracking on ${cap(r.tracking)}`);
-    if (r.red.length) fail(`${path} @${width}: oxblood outside a said-no mark: ${cap(r.red)}`);
-    if (path === "/") {
-      if (r.sizes.length > 9) fail(`/ @${width}: ${r.sizes.length} type sizes (${r.sizes.join(", ")}); the budget is 9`);
-      for (const [fam, ws] of Object.entries(r.weights)) if (ws.length > 2) fail(`/ @${width}: ${fam} in ${ws.length} weights (${ws.join(", ")})`);
-      if (r.portrait?.filter !== "none") fail(`/ @${width}: portrait is filtered (${r.portrait?.filter})`);
-      if (r.portrait?.loading === "lazy") fail(`/ @${width}: portrait is lazy-loaded`);
-    }
+    if (r.orange.length) fail(`${path} @${width}: orange outside a dot: ${cap(r.orange)}`);
     await ctx.close();
   }
 }
-
-/* ---- 9. the ledger agrees with itself ----------------------------- */
 {
   const { ctx, page } = await open("/", 1440);
-  const home = await page.evaluate(() => ({
-    tally: Number(document.querySelector(".tally .n").textContent.trim()),
-    links: [...document.querySelectorAll(".w a.mk")].map((a) => ({ href: a.getAttribute("href"), n: null })),
-  }));
+  const cards = await page.evaluate(() =>
+    [...document.querySelectorAll(".card")].map((c) => ({
+      id: c.id,
+      writeup: c.querySelector("h3 a")?.getAttribute("href") ?? "",
+      code: c.querySelector(".repo")?.getAttribute("href") ?? "",
+      num: c.querySelector(".num")?.textContent.trim() ?? "",
+    })),
+  );
+  if (cards.length !== systems.length) fail(`/: ${cards.length} project cards for ${systems.length} systems`);
+  for (const c of cards) {
+    if (c.writeup !== `/systems/${c.id}/`) fail(`/: card ${c.id} does not open its write-up`);
+    if (!c.code.startsWith("https://github.com/")) fail(`/: card ${c.id} has no code link`);
+    if (!c.num) fail(`/: card ${c.id} has no result`);
+  }
+  await ctx.close();
+}
+
+/* ---- 5. the count of what didn't work agrees ------------------------ */
+{
+  const { ctx, page } = await open("/", 1440);
+  const home = await page.evaluate(() => Number(/See all (\d+)/.exec(document.querySelector(".more").textContent)[1]));
   await ctx.close();
   const s = await open("/said-no/", 1440);
   const said = await s.page.evaluate(() => ({
-    count: Number(document.querySelector('.tallyrow .n [aria-hidden="true"]').textContent.trim()),
+    count: Number(document.querySelector(".page-lede .count").textContent.trim()),
     rows: document.querySelectorAll(".lrow").length,
-    groups: Object.fromEntries([...document.querySelectorAll(".lg")].map((g) => [g.id, g.querySelectorAll(".lrow").length])),
   }));
   await s.ctx.close();
-  if (said.count !== said.rows) fail(`/said-no/: numeral ${said.count} but ${said.rows} rows`);
-  if (home.tally !== said.count) fail(`/: tally ${home.tally} but /said-no/ counts ${said.count}`);
-  if (!home.links.length) fail('/: no "N said no" links on the work rows');
-  for (const k of home.links) {
-    const id = k.href.split("#")[1];
-    if (!said.groups[id]) fail(`/: "Said no" → ${k.href} lands on no ledger group`);
-  }
+  if (said.count !== said.rows) fail(`/said-no/: says ${said.count} but lists ${said.rows}`);
+  if (home !== said.count) fail(`/: "See all ${home}" but /said-no/ counts ${said.count}`);
 }
 
 /* ---- 10. case pages ----------------------------------------------- */
@@ -274,31 +205,14 @@ for (const path of CASES) {
   const c = await page.evaluate(() => ({
     h1: document.querySelectorAll("h1").length,
     figs: document.querySelectorAll(".cfig").length,
-    plate: document.querySelectorAll(".plate").length,
-    held: [...document.querySelectorAll(".cs:not(.neg)")].length,
+    summary: document.querySelectorAll(".summary .num").length,
   }));
   if (c.h1 !== 1) fail(`${path}: ${c.h1} h1 elements`);
   if (!c.figs) fail(`${path}: no figure`);
-  if (!c.plate) fail(`${path}: no plate`);
+  if (!c.summary) fail(`${path}: no plain summary`);
   const name = path.replace(/\//g, "_").replace(/^_|_$/g, "");
   await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, timeout: 120000 });
   await ctx.close();
-}
-
-/* ---- 10b. a case name never runs into its tagline -------------------- */
-for (const path of [...CASES, "/said-no/"]) {
-  for (const width of [1024, 1280, 1366, 1440]) {
-    const { ctx, page } = await open(path, width);
-    const gap = await page.evaluate(() => {
-      const h = document.querySelector(".cname");
-      const t = document.querySelector(".ctag");
-      const r = document.createRange();
-      r.selectNodeContents(h);
-      return t.getBoundingClientRect().left - r.getBoundingClientRect().right;
-    });
-    if (gap < 24) fail(`${path} @${width}: the name comes within ${Math.round(gap)}px of its tagline`);
-    await ctx.close();
-  }
 }
 
 /* ---- 10c. the home page and the ledger ship no JavaScript --------- */
@@ -311,7 +225,7 @@ for (const file of ["index.html", "said-no/index.html"]) {
 {
   const { ctx, page } = await open("/", 1440);
   const before = await page.evaluate(() => document.body.innerText);
-  for (const sel of [".row", ".nm h3 a", ".go a", "a.mk"]) {
+  for (const sel of [".card", ".btn", ".row", ".principles li"]) {
     const n = await page.locator(sel).count();
     for (let i = 0; i < n; i++) await page.locator(sel).nth(i).hover();
   }
@@ -329,4 +243,4 @@ if (failures.length) {
   console.error("");
   process.exit(1);
 }
-console.log(`qa: ${ROUTES.length} routes · no overflow 360–1920 · nothing moves · first screen, cap line and five column starts hold · three faces within budget · oxblood only on the full stop and what said no · the ledger agrees.`);
+console.log(`qa: ${ROUTES.length} routes · no overflow 360–1920 · nothing moves · first screen holds · one family · orange only as a dot · cards open write-ups and code · the count agrees.`);

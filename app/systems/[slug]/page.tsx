@@ -14,7 +14,7 @@ import { smart } from "@/lib/typo";
 import CaseSection from "@/components/case/CaseSection";
 import PrevNext from "@/components/case/PrevNext";
 import Schematic from "@/components/Schematic";
-import KeepHyphens from "@/components/KeepHyphens";
+import Arrow from "@/components/ui/Arrow";
 import Num from "@/components/Num";
 import SpecLine from "@/components/SpecLine";
 
@@ -48,9 +48,6 @@ export async function generateMetadata(
 
 const ARTICLE_ID = "case";
 
-/** A display number sized to its column: long readouts step down so they never overflow a major. */
-const sizeOf = (v: string) => (v.length <= 7 ? "" : v.length <= 13 ? " mid" : " small");
-
 export default async function SystemPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const system = systemBySlug(slug);
@@ -70,45 +67,59 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
   const sections = shownSections(system);
 
   return (
-    <article id={ARTICLE_ID} data-results="all">
-      <div className="chero g12">
-        <h1 className="cname">{system.name}</h1>
-        <p className="ctag">
-          <KeepHyphens text={held?.tagline ?? system.tagline} />
+    <article className="wrap case" id={ARTICLE_ID}>
+      <p className="crumb">
+        <a href="/#projects">← All projects</a>
+      </p>
+      <header className="page-head">
+        <h1>{system.name}</h1>
+        <p className="page-lede">{system.plain.line}</p>
+        <div className="actions">
+          <a className="btn btn-primary" href={system.repo} target="_blank" rel="noreferrer noopener">
+            Code on GitHub <Arrow />
+          </a>
+          {ledger.length ? (
+            <a className="btn" href={`/said-no/#no-${system.slug}`}>
+              What didn’t work ({ledger.length})
+            </a>
+          ) : null}
+        </div>
+      </header>
+
+      <div className="summary">
+        <p className="num">
+          {system.plain.num}
+          {system.plain.vs ? <span className="vs">{system.plain.vs}</span> : null}
         </p>
+        <p className="cap">{system.plain.cap}</p>
       </div>
 
-      <div className="plate g12">
-        <div className="q1">
-          <p className="k">
-            {system.year} · {system.thread}
-          </p>
-          <p className="meta">
-            <SpecLine text={system.spec} />
-          </p>
-          <p className="go">
-            <a className="u" href={system.repo} target="_blank" rel="noreferrer noopener">
-              Code
-            </a>
-          </p>
+      <section className="cs tech" aria-label="The technical write-up">
+        <h2>The technical write-up</h2>
+        <div className="body">
+          <p className="lede">{smart(held?.abstract ?? system.abstract)}</p>
+          <dl className="facts">
+            {shownReadouts(system).map((r) => (
+              <div key={r.label} className={r.negative ? "neg" : undefined}>
+                <dt>
+                  <Num value={r.value} />
+                </dt>
+                <dd>{r.label}</dd>
+              </div>
+            ))}
+            <div>
+              <dt className="sm">
+                <SpecLine text={system.spec} />
+              </dt>
+              <dd>
+                {system.year} · {system.thread}
+              </dd>
+            </div>
+          </dl>
         </div>
-        {shownReadouts(system).map((r, i) => (
-          <div key={r.label} className={i === 0 ? "q2" : "q3"}>
-            <p className={`num${r.negative ? " neg" : ""}${sizeOf(r.value)}`} {...(r.negative ? { "data-ink": "neg" } : {})}>
-              <Num value={r.value} />
-            </p>
-            <p className="cap">
-              <KeepHyphens text={r.label} />
-            </p>
-          </div>
-        ))}
-      </div>
+      </section>
 
       <Schematic schematic={system.schematic} label={system.name} />
-
-      <div className="g12">
-        <p className="lede">{smart(held?.abstract ?? system.abstract)}</p>
-      </div>
 
       {sections.map((section) => {
         const id = slugify(section.heading);

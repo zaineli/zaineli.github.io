@@ -1,1 +1,1 @@
-“Machines can learn patterns. Machines can follow rules. Almost none of them can guess.” set as a light serif title in charcoal on chalk white, beside a colour photo of Zain Ali at a chalkboard; beneath it, “I don’t think LLMs get us to AGI. I think RL does.”
+“I build AI that remembers, imagines, and learns from its mistakes.” in large black type on white, beside a colour photo of Zain Ali at a chalkboard, with buttons to email him, GitHub and LinkedIn.

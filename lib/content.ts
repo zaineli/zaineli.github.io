@@ -293,6 +293,21 @@ export const profile = {
   /** The foot. */
   aside: "October 2026",
 
+  /** Round 19: the home page in plain words, for a visitor who is not a researcher. */
+  headline: ["I build AI that", "remembers, imagines,", "and learns from", "its mistakes"],
+  lede: "Most AI today is very good at repeating patterns. I work on the parts it is still missing.",
+  now: "We build AI agents that keep their memory between tasks.",
+  projectsIntro: "All open source. I build each piece from scratch, test it honestly, and publish what failed too.",
+  belief: {
+    doubt: "I don’t think bigger language models alone get us to human-level AI.",
+    bet: "I think learning by trial and error does.",
+  },
+  principles: [
+    "I test every idea against the simplest thing that could beat it.",
+    "When something fails, I publish that too.",
+    "Less code, fewer claims, more evidence.",
+  ],
+
   /** The Record statement — LinkedIn summary, verbatim. */
   lives:
     "RL, world models, combinatorial search, behavioral cloning, linear algebra, neuroscience — that’s where I live.",
@@ -355,6 +370,8 @@ export interface Role {
   outcomes: Outcome[];
   /** A role with no number prints this instead — his own words. */
   gloss?: string;
+  /** The home page's one line for this role, in plain words. */
+  plain: string;
   glossLine?: string;
 }
 
@@ -365,7 +382,8 @@ export const experience: Role[] = [
   {
     company: "Alexein AI",
     title: "VP Engineering & Product",
-    period: "2026 —",
+    plain: "Leading engineering and product.",
+    period: "2026 – now",
     location: "California, United States",
     points: [
       "Lead engineering and product for an agent platform built on reinforcement learning and world models rather than prompt pipelines.",
@@ -381,6 +399,7 @@ export const experience: Role[] = [
   {
     company: "ImagineArt",
     title: "Machine Learning Engineer",
+    plain: "Cut AI website generation from 45 minutes to 13.",
     period: "2026",
     location: "Islamabad, Pakistan",
     points: [
@@ -396,7 +415,8 @@ export const experience: Role[] = [
   {
     company: "Victreat Health Tech",
     title: "RL / Agentic Systems Engineer",
-    period: "2025 — 2026",
+    plain: "Raised a web-data extraction system’s success rate from 67% to 91%.",
+    period: "2025 – 2026",
     location: "Islamabad, Pakistan",
     points: [
       "Architected a self-evolving reinforcement-learning web crawler with dynamic policy optimisation across 10,000+ sites, reaching 84% faster extraction through continuous DOM-pattern learning.",
@@ -409,9 +429,10 @@ export const experience: Role[] = [
     ],
   },
   {
-    company: "Machvis Lab",
+    company: "Machvis Lab, NUST",
     title: "Research Assistant",
-    period: "2025 — 2026",
+    plain: "Built the face-clustering pipeline behind TVFace: 2.6 million images of 29,000 people.",
+    period: "2025 – 2026",
     location: "Islamabad, Pakistan",
     points: [
       "Built the large-scale facial clustering pipeline behind the TVFace dataset — 2.6M images across 29K identities drawn from TV broadcasts.",
@@ -475,6 +496,8 @@ export interface System {
   homeLine: string;
   /** Home page: what the system asks, in plain words. */
   question: string;
+  /** Home card, for a visitor who is not a researcher: one line, one result, one caption. */
+  plain: { line: string; num: string; vs?: string; cap: string };
   /** Home page: the one thing that said no, in one line. */
   no: string;
   /** Home page: the column's figure. Never repeats `lead`'s value. */
@@ -523,6 +546,11 @@ const systemList: System[] = [
     },
     homeLine: "The model can imagine and can check, but does not think to check before it leaps.",
     question: "Can a model make Einstein’s 1907 leap, and does it check before it leaps?",
+    plain: {
+      line: "Can an AI make Einstein’s leap, and check it before trusting it?",
+      num: "2 of 140",
+      cap: "times the AI checked its own idea before trusting it. When asked to check, it did every time.",
+    },
     no: "The RL arm, my own bet, never made the jump in 9,000,576 episodes.",
     homeFigure: {
       id: "home-gedanken",
@@ -827,6 +855,12 @@ const systemList: System[] = [
     },
     homeLine: "The gain over a vector store is the conjunctive pathway.",
     question: "Can a memory built like a hippocampus beat a tuned retrieval baseline?",
+    plain: {
+      line: "Memory for AI assistants, inspired by the brain.",
+      num: "64%",
+      vs: "vs 61%",
+      cap: "Found the right past message more often than the best standard method, on a public test it was never tuned on.",
+    },
     no: "On LongMemEval it ties the tuned hybrid on session recall and trails it on turn NDCG; sleep and reinstatement add nothing measurable.",
     homeFigure: {
       id: "home-engram",
@@ -1170,6 +1204,11 @@ const systemList: System[] = [
     },
     homeLine: "The shortfall is model fidelity, and the rollout curve says so independently.",
     question: "Can a small world model plan where planning needs a model? If not, whose fault is it?",
+    plain: {
+      line: "An AI that plans by imagining the future.",
+      num: "Not yet",
+      cap: "It doesn’t beat random guessing yet, and I traced exactly why: its picture of the world isn’t sharp enough.",
+    },
     no: "It solves no more episodes than random, and both hypotheses for why sampling fails were refuted.",
     // The oracle figure below (figures[1]), drawn on the home page as one band.
     homeFigure: {
@@ -1461,6 +1500,11 @@ const systemList: System[] = [
     },
     homeLine: "A loop that logs “accepted, +3%” cannot tell you which 3%.",
     question: "When a system improves itself, can you tell a real gain from gaming its own verifier?",
+    plain: {
+      line: "Catching AI that cheats its own tests.",
+      num: "40%",
+      cap: "of its “improvements” only gamed the test when the AI could see it. With no test at all, it was 7%.",
+    },
     no: "12 seeds cannot resolve whether it improves at all; even a gain the size of all the headroom would need 43.",
     homeFigure: {
       id: "home-whetstone",
@@ -1665,6 +1709,11 @@ const systemList: System[] = [
     },
     homeLine: "The control is more informative than the headline.",
     question: "Which tricks inside an inference engine actually pay, and under what workload?",
+    plain: {
+      line: "A faster engine for running language models.",
+      num: "2×",
+      cap: "faster on realistic traffic, with output identical to the standard Hugging Face library.",
+    },
     no: "Give every request the same generation length and the gain falls to 1.16×.",
     homeFigure: {
       id: "home-spindle",
@@ -1936,6 +1985,12 @@ const systemList: System[] = [
     },
     homeLine: "Filing for recall does not find the structure imagination needs.",
     question: "Does where a memory is filed decide what it can recall, and what it can imagine?",
+    plain: {
+      line: "How the brain’s “map cells” could organise memories.",
+      num: "<1",
+      vs: "point off",
+      cap: "My formula predicted recall on 156 new tests and was off by less than one percentage point on average, with no tuning.",
+    },
     no: "Filed for recall, it constructs 0.24–0.31 of the combinations it never saw. Filed by the true factors, 0.95–1.00.",
     homeFigure: {
       id: "home-loci",
@@ -2316,8 +2371,8 @@ export const GEDANKEN_PUBLIC = false;
  */
 const ORDER: SystemSlug[] = [
   ...(GEDANKEN_PUBLIC ? (["gedanken"] as const) : []),
-  "loci",
   "engram",
+  "loci",
   "whetstone",
   "spindle",
   "reverie",
@@ -2359,6 +2414,8 @@ export interface Publication {
   verdict: string;
   /** `verdict` split at its semicolon: the claim in ink, the limit in red. */
   claim?: { lead: string; rest: string };
+  /** The home card, in plain words. */
+  plain?: { line: string; with: string; num: string; vs: string; cap: string };
   limit?: string;
   readout: Readout;
   figures: FigureSpec[];
@@ -2398,6 +2455,13 @@ const conoid: Publication = {
     year: "2026",
     // The PDF's own status line, word for word. Not "under review".
     status: "Preprint. Not peer-reviewed; under continued development.",
+    plain: {
+      line: "Teams of AI agents that remember who is good at what.",
+      with: "With Muhammad Ahmed Mohsin, Stanford University",
+      num: "66%",
+      vs: "vs 44%",
+      cap: "When agents’ self-descriptions were misleading, picking teams by track record succeeded 66% of the time, vs 44% with fixed roles.",
+    },
     // The preprint's abstract, verbatim (p.1).
     abstract:
       "Frameworks for multi-agent language-model systems make it cheap to instantiate named agents and have them coordinate, but most evaluations treat each run as disposable: a team is chosen, an answer is produced, and almost no structured evidence survives into the next assignment. We study that missing persistence layer. CONOID maintains a population of agents that carry profiles, tiered memories, signed social edges, and a per-skill Beta-reputation posterior; a structured judge proposes bounded updates to those channels, and the next team is selected against the updated state. Our contribution is empirical as much as architectural, and the main result is conditional on profile quality. On a 691,200-row oracle-backed team-selection benchmark, a fixed static-role assignment is the best non-oracle policy when visible profiles are reliable (oracle regret 0.044), but a reputation-plus-exploration policy is best when profiles are weak (85.2% success vs. 75.5% for static roles; regret 0.076 vs. 0.098) or adversarially noisy (65.9% vs. 44.2%; regret 0.094 vs. 0.146), with seed-paired bootstrap intervals excluding zero. On a 2,880-row live private-evidence benchmark in which an answer is correct only if the selected team collectively holds all evidence, the same policy closes 68–71% of the random-to-oracle selection gap when evidence holders are profile-aligned, while hidden-expert discovery stays near chance. A 1,440-call coordinator replay isolates a second, separable bottleneck: schema-constrained answer aggregation drops accuracy from 0.839 to 0.586, whereas deterministic slot assembly recovers 0.992. The claim is therefore narrow: persistent per-skill reputation with explicit exploration helps team formation when profiles are incomplete or misleading; it is not a universal substitute for good profiles, and rewarding raw social cohesion can hurt.",
@@ -2756,8 +2820,9 @@ export const ledgerKinds: { kind: LedgerKind; count: number; noun: string }[] = 
 export const education = {
   school: "National University of Sciences and Technology (NUST)",
   short: "NUST",
-  degree: "BS, Computer Science",
-  period: "2022 — 2026",
+  degree: "BS Computer Science",
+  period: "2022 – 2026",
+  plain: "4th nationwide in the NUST Entry Test. 2nd in ECAT, the engineering entrance test.",
 } as const;
 
 /* ------------------------------------------------------------------ *
@@ -2788,4 +2853,4 @@ export const priors: Prior[] = [
 ];
 
 export const metaDescription =
-  "Zain Ali — VP Engineering & Product at Alexein AI. Reinforcement learning, world models, and the memory and inference systems agents need to improve with use.";
+  "Zain Ali builds AI that remembers, imagines, and learns from its mistakes. VP Engineering & Product at Alexein AI. Open-source projects on AI memory, planning and self-improvement.";

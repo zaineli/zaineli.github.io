@@ -7,7 +7,7 @@ import CaseSection from "@/components/case/CaseSection";
 import CopyBib from "@/components/case/CopyBib";
 import PrevNext from "@/components/case/PrevNext";
 import Schematic from "@/components/Schematic";
-import KeepHyphens from "@/components/KeepHyphens";
+import Arrow from "@/components/ui/Arrow";
 
 /**
  * Static params come from `publications`, and nothing else builds this
@@ -68,47 +68,55 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
   }));
 
   return (
-    <article id="case" data-results="all">
-      <div className="chero g12">
-        <h1 className="cname">{paper.shortTitle}</h1>
-        <p className="ctag">
-          <KeepHyphens text={paper.title} />
-        </p>
-      </div>
+    <article className="wrap case" id="case">
+      <p className="crumb">
+        <a href="/#paper">← Back</a>
+      </p>
+      <header className="page-head">
+        <h1>{paper.shortTitle}</h1>
+        <p className="page-lede">{paper.plain?.line ?? paper.title}</p>
+        <div className="actions">
+          {paper.media.pdf ? (
+            <a className="btn btn-primary" href={paper.media.pdf} target="_blank" rel="noreferrer noopener">
+              Read the PDF <Arrow />
+            </a>
+          ) : null}
+          {paper.bibtex ? <CopyBib text={paper.bibtex} /> : null}
+        </div>
+      </header>
 
-      <div className="plate g12">
-        <div className="q1">
-          <p className="k">{[paper.year, "Paper"].filter(Boolean).join(" · ")}</p>
-          <p className="meta">{paper.status}</p>
-          {(paper.authorList ?? []).map((a) => (
-            <p key={a.name} className="meta">
-              {a.name}
-              <span>{a.affiliation}</span>
-            </p>
-          ))}
-        </div>
-        <div className="q2">
-          <p className="num">{paper.readout.value}</p>
-          <p className="cap">{paper.readout.label}</p>
-        </div>
-        <div className="q3">
-          <p className="k">Read</p>
-          <p className="go">
-            {paper.media.pdf ? (
-              <a className="u" href={paper.media.pdf} target="_blank" rel="noreferrer noopener">
-                PDF
-              </a>
-            ) : null}
-            {paper.bibtex ? <CopyBib text={paper.bibtex} /> : null}
+      {paper.plain ? (
+        <div className="summary">
+          <p className="num">
+            {paper.plain.num}
+            <span className="vs">{paper.plain.vs}</span>
           </p>
+          <p className="cap">{paper.plain.cap}</p>
         </div>
-        <div className="q4">
+      ) : null}
+
+      <section className="cs tech" id="abstract">
+        <h2>Abstract</h2>
+        <div className="body">
+          <p className="ptitle">{paper.title}</p>
+          <p className="authors">
+            {(paper.authorList ?? []).map((a, i) => (
+              <span key={a.name}>
+                {i > 0 ? ", " : null}
+                {a.name} <span className="aff">({a.affiliation})</span>
+              </span>
+            ))}
+          </p>
+          <p className="status">
+            {paper.year} · {paper.status}
+          </p>
+          <p>{smart(paper.abstract)}</p>
           {paper.media.page1 && paper.media.pdf ? (
             <a className="page" href={paper.media.pdf} target="_blank" rel="noreferrer noopener" aria-label={`${paper.shortTitle} preprint, PDF`}>
               <img
                 src={paper.media.page1.replace(".webp", "-360.webp")}
                 srcSet={`${paper.media.page1.replace(".webp", "-360.webp")} 360w, ${paper.media.page1.replace(".webp", "-660.webp")} 660w, ${paper.media.page1} 824w`}
-                sizes="180px"
+                sizes="200px"
                 width={824}
                 height={1067}
                 alt={`First page of the ${paper.shortTitle} preprint`}
@@ -116,18 +124,9 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
             </a>
           ) : null}
         </div>
-      </div>
+      </section>
 
       <Schematic schematic={paper.schematic} label={paper.shortTitle} />
-
-      {/* The preprint's abstract, verbatim: long, so it is set as prose,
-          not at lede size. */}
-      <section className="cs g12" id="abstract">
-        <h2>Abstract</h2>
-        <div className="body">
-          <p>{smart(paper.abstract)}</p>
-        </div>
-      </section>
 
       {figureSections.map((fs) => (
         <CaseSection
@@ -153,7 +152,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
       })}
 
       {paper.bibtex ? (
-        <section className="cs g12" id="cite">
+        <section className="cs" id="cite">
           <h2>Cite</h2>
           <div className="body">
             <pre className="bib">{paper.bibtex}</pre>
