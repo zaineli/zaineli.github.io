@@ -5,21 +5,24 @@ import { metaDescription, profile } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// One family for everything: Geist, a self-hosted subset (wght 400–600).
-// Geist has no Greek, so the write-ups' γ, τ and Δ fall to Source Serif 4,
-// which loads only on a page that prints one.
-const geist = localFont({
-  src: "./fonts/Geist-var.woff2",
-  variable: "--font-geist",
-  weight: "400 600",
+/*
+ * One family for everything: Archivo, variable in weight (250–600), cut
+ * for this site (see docs/type.md). Light for anything large, regular for
+ * anything you read. Archivo has no Greek, so the write-ups' γ and τ fall
+ * to a Source Serif 4 backstop that loads only on a page that prints one.
+ */
+const archivo = localFont({
+  src: "./fonts/archivo.woff2",
+  variable: "--font-archivo",
+  weight: "250 600",
   display: "swap",
   adjustFontFallback: "Arial",
 });
 
 const backstop = localFont({
-  src: "./fonts/SourceSerif4-var.woff2",
-  variable: "--font-ss4",
-  weight: "400 650",
+  src: "./fonts/serif-text.woff2",
+  variable: "--font-backstop",
+  weight: "380 620",
   display: "swap",
   preload: false,
   adjustFontFallback: false,
@@ -39,13 +42,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#e7e7e1",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${backstop.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${backstop.variable}`}>
       <body>
         <a className="skip" href="#main">
           Skip to content
