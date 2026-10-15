@@ -332,6 +332,28 @@ export const links: Link[] = [
 ];
 
 /* ------------------------------------------------------------------ *
+ * Round 23 — the studio. Copy that only the home page prints. The home
+ * page is meant to be looked at: a sculpture, one sentence, and each
+ * project as a name, a field and one number. Everything longer lives on
+ * the write-up pages.
+ * ------------------------------------------------------------------ */
+
+export const home = {
+  /** The hero sentence, in two weights: what he builds, then how. */
+  lead: "AI that remembers, imagines,",
+  leadDim: "and learns from its mistakes.",
+  /** Each project's field, in a few words. */
+  fields: {
+    engram: "Memory, modelled on the hippocampus",
+    loci: "Where memories are filed",
+    whetstone: "Catching AI that games its own tests",
+    spindle: "An inference engine from scratch",
+    reverie: "Planning inside a learned world",
+  } as Record<string, string>,
+  ledger: "things that didn’t work, published with the rest",
+  contactLine: "Let’s talk.",
+};
+/* ------------------------------------------------------------------ *
  * How he works: five lines, verbatim, from files he wrote and committed —
  * spindle's public README, and the engineering standard and research rules
  * he seeded into his own and his team's repositories (2026-08-31).
@@ -2853,4 +2875,4 @@ export const priors: Prior[] = [
 ];
 
 export const metaDescription =
-  "Zain Ali builds AI that remembers, imagines, and learns from its mistakes. VP Engineering & Product at Alexein AI. Open-source projects on AI memory, planning and self-improvement.";
+  "Zain Ali, research engineer and VP Engineering & Product at Alexein AI, builds AI that remembers, imagines, and learns from its mistakes: open-source systems for agent memory, world models and planning, and auditable self-improvement.";

@@ -9,32 +9,33 @@
  * Imported with the .ts extension so Node can load it natively.
  * ------------------------------------------------------------------ */
 
-import { education, experience, negativeCount, profile, publications, systems } from "./content.ts";
+import { education, home, profile, publications, systems } from "./content.ts";
 
 const facts: string[] = [];
 
-// The hero
-facts.push(...profile.headline, profile.lede, profile.now);
+// The opening sentence, in its two weights
+facts.push(home.lead, home.leadDim);
 
-// Projects: each card's line, result and caption
-facts.push(profile.projectsIntro);
+// Work: each project's field and number; the ledger
 for (const s of systems) {
-  facts.push(s.plain.line, s.plain.num, s.plain.cap);
-  if (s.plain.vs) facts.push(s.plain.vs);
+  facts.push(home.fields[s.slug] ?? "", s.plain.num);
 }
+facts.push(home.ledger);
 
-// The paper card
+// What he believes
+facts.push(profile.belief.doubt, profile.belief.bet);
+
+// Papers
 for (const p of publications) {
   if (!p.plain) continue;
-  facts.push(p.plain.line, p.plain.with, p.plain.num, p.plain.vs, p.plain.cap);
+  facts.push(p.plain.line, p.plain.num);
 }
 
-// Experience and education, one line each
-for (const r of experience) facts.push(r.plain);
-facts.push(education.degree, education.plain);
+// About
+facts.push(profile.lives, education.degree, education.plain);
 
-// How I work
-facts.push(profile.belief.doubt, profile.belief.bet, ...profile.principles, `See all ${negativeCount}`);
+// Contact
+facts.push(home.contactLine);
 
 /** Each string occurs exactly once in the visible text of out/index.html. */
 export const homeFacts: string[] = Array.from(new Set(facts.filter((f) => f.length > 0)));
@@ -43,11 +44,10 @@ export const homeFacts: string[] = Array.from(new Set(facts.filter((f) => f.leng
 export const allowlist: Record<string, number> = {
   // the header and the footer
   [profile.name]: 2,
-  // the header, the "now" line and the first experience row
-  [profile.company]: 3,
-  // the header and the first experience row
+  // the line over the opening sentence and the first role
+  [profile.company]: 2,
   [profile.role]: 2,
-  // an affiliation-free page: the lab row and the education row
+  // the lab row, the education line, and the entrance test it names
   NUST: 3,
 };
 
