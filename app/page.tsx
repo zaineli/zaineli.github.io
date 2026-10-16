@@ -6,20 +6,30 @@ import Rules from "@/components/sections/Rules";
 import Contact from "@/components/sections/Contact";
 
 /**
- * Round 19, the direction he picked: a clean, white, modern page in plain
- * words. Who he is and what he builds, the projects with one result each,
- * the paper, where he has worked and studied, how he works, how to reach
- * him. One family (Geist), soft grey cards, one orange dot.
+ * Round 25, the ceramic: white, every section in its own frame. The first
+ * frame holds one glossy white knot; beside the work, a close view of the
+ * same knot becomes each project's own knot as you point at its row.
  */
 export default function Home() {
   return (
-    <>
+    <div className="home">
       <Hero />
-      <Projects />
-      <Papers />
-      <Record />
+      <div className="panel show">
+        <div className="wrap show-in">
+          <div className="show-text">
+            <Projects />
+            <Papers />
+          </div>
+          <div className="show-side">
+            <div className="stage" data-stage="work" aria-hidden="true">
+              <canvas />
+            </div>
+          </div>
+        </div>
+      </div>
       <Rules />
+      <Record />
       <Contact />
-    </>
+    </div>
   );
 }

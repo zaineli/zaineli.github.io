@@ -1,45 +1,30 @@
-import { profile, systems } from "@/lib/content";
-import Arrow from "@/components/ui/Arrow";
+import { home, negativeCount, systems } from "@/lib/content";
 
 /**
- * One card per project: its name, one plain line, one big result and what
- * that result means. The card opens the write-up; the GitHub link opens the
- * code. The first two cards run wide, the rest in threes.
+ * Selected work: each project is its name, its field and one number. The
+ * row opens the write-up; pointing at it turns the knot beside it into
+ * that project's knot (data-form, read by /fig0.js).
  */
 export default function Projects() {
-  const wide = systems.length % 3 === 2 ? 2 : systems.length % 3 === 1 ? 4 : 0;
   return (
-    <section id="projects" className="wrap sec" aria-labelledby="h-projects">
-      <div className="grid">
-        <h2 className="sec-title" id="h-projects">
-          Projects
-        </h2>
-        <div className="sec-body">
-          <p className="sec-intro">{profile.projectsIntro}</p>
-        </div>
-      </div>
-      <div className="grid cards">
-        {systems.map((s, i) => (
-          <article key={s.slug} className={`card${i < wide ? " wide" : ""}`} id={s.slug}>
-            <div className="card-head">
-              <h3>
-                <a className="stretch" href={`/systems/${s.slug}/`}>
-                  {s.name}
-                </a>
-              </h3>
-              <a className="repo" href={s.repo} target="_blank" rel="noreferrer noopener">
-                GitHub <Arrow />
-              </a>
-            </div>
-            <p className="card-desc">{s.plain.line}</p>
-            <p className="num">
-              {s.plain.num}
-              {s.plain.vs ? <span className="vs">{s.plain.vs}</span> : null}
-            </p>
-            <p className="cap">{s.plain.cap}</p>
-          </article>
+    <section id="work" className="sec" aria-labelledby="h-work">
+      <h2 className="eyebrow" id="h-work">
+        Selected work
+      </h2>
+      <ol className="rows">
+        {systems.map((s) => (
+          <li key={s.slug} id={s.slug}>
+            <a className="row" href={`/systems/${s.slug}/`} data-form={s.slug}>
+              <span className="row-name">{s.name}</span>
+              <span className="row-field">{home.fields[s.slug] ?? s.plain.line}</span>
+              <span className="row-num">{s.plain.num}</span>
+            </a>
+          </li>
         ))}
-      </div>
+      </ol>
+      <a className="ledger" href="/said-no/">
+        <b>{negativeCount}</b> {home.ledger} <span aria-hidden="true">→</span>
+      </a>
     </section>
   );
 }

@@ -1,43 +1,37 @@
-import { publications } from "@/lib/content";
+import { listings, publications } from "@/lib/content";
 import Arrow from "@/components/ui/Arrow";
 
-/** The paper, as one dark card: what it is, who wrote it, and the one result, in plain words. */
+/** The paper as a row like the work (with its own knot), the one in submission under it, and the PDF. */
 export default function Papers() {
   const shown = publications.filter((p) => p.plain && p.media.pdf);
   if (!shown.length) return null;
   return (
-    <section id="paper" className="wrap sec" aria-labelledby="h-paper">
-      <div className="grid">
-        <h2 className="sec-title" id="h-paper">
-          Paper
-        </h2>
-        <div className="sec-body">
-          {shown.map((p) => (
-            <article key={p.slug} className="paper">
-              <div className="paper-main">
-                <p className="paper-meta">Preprint, {p.year}</p>
-                <h3>
-                  <a href={`/papers/${p.slug}/`}>{p.shortTitle}</a>
-                </h3>
-                <p className="paper-desc">{p.plain!.line}</p>
-                <p className="paper-with">{p.plain!.with}</p>
-              </div>
-              <div className="actions paper-cta">
-                <a className="btn" href={p.media.pdf} target="_blank" rel="noreferrer noopener">
-                  Read the PDF <Arrow />
-                </a>
-              </div>
-              <div className="paper-result">
-                <p className="num">
-                  {p.plain!.num}
-                  <span className="vs">{p.plain!.vs}</span>
-                </p>
-                <p className="cap">{p.plain!.cap}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
+    <section id="papers" className="sec" aria-labelledby="h-papers">
+      <h2 className="eyebrow" id="h-papers">
+        Papers
+      </h2>
+      <ol className="rows">
+        {shown.map((p) => (
+          <li key={p.slug}>
+            <a className="row" href={`/papers/${p.slug}/`} data-form={p.slug}>
+              <span className="row-name">{p.shortTitle}</span>
+              <span className="row-field">{p.plain!.line}</span>
+              <span className="row-num">{p.plain!.num}</span>
+            </a>
+          </li>
+        ))}
+        {listings.map((l) => (
+          <li key={l.title} className="row quiet">
+            <span className="row-name small">{l.title}</span>
+            <span className="row-field">{l.status}</span>
+          </li>
+        ))}
+      </ol>
+      {shown.map((p) => (
+        <a key={p.slug} className="go" href={p.media.pdf} target="_blank" rel="noreferrer noopener">
+          Read the {p.shortTitle} preprint <Arrow />
+        </a>
+      ))}
     </section>
   );
 }

@@ -1,57 +1,54 @@
-import { links, profile } from "@/lib/content";
-import { portraitPlaceholder } from "@/lib/portrait";
-import Arrow from "@/components/ui/Arrow";
+import { home, listings, negativeCount, profile, publications, systems } from "@/lib/content";
+import { numberWord } from "./words";
 
-const href = (label: string) => links.find((l) => l.label === label)?.href ?? "#";
+/** three.js, self-hosted, mapped for /fig0.js. */
+export const THREE_URL = "/vendor/three-0.160.0.module.min.js";
 
-/** The headline, one line under it, three ways to reach him, and where he is now — beside his photo. */
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * The first panel: the ceramic knot (Fig. 0, drawn by /fig0.js — the only
+ * script the home page ships, with three.js) on its right; one sentence in
+ * two weights at its lower left, and three facts in the corner.
+ */
 export default function Hero() {
-  const lines = profile.headline;
+  const facts = [
+    [`${cap(numberWord(systems.length))} systems`, "built from scratch"],
+    [`${cap(numberWord(publications.length + listings.length))} papers`, "one preprint, one in submission"],
+    [`${negativeCount} results`, "that said no, published"],
+  ];
   return (
-    <section className="wrap hero" aria-labelledby="headline">
-      <div className="grid">
-        <div className="hero-text">
-          <div className="hero-top">
-            <h1 id="headline">
-              {lines.map((l, i) => (
-                <span key={l} className="l">
-                  {l}
-                  {i < lines.length - 1 ? " " : <span className="stop">.</span>}
-                </span>
-              ))}
-            </h1>
-            <p className="lede">{profile.lede}</p>
-            <div className="actions">
-              <a className="btn btn-primary" href={href("Email")}>
-                Email me
-              </a>
-              <a className="btn" href={href("GitHub")} target="_blank" rel="noreferrer noopener">
-                GitHub <Arrow />
-              </a>
-              <a className="btn" href={href("LinkedIn")} target="_blank" rel="noreferrer noopener">
-                LinkedIn <Arrow />
-              </a>
-            </div>
-          </div>
-          <p className="now">
-            <span className="dot" aria-hidden="true" />
-            <span>
-              <strong>Now at {profile.company}.</strong> {profile.now}
-            </span>
-          </p>
+    <>
+      <section className="panel hero" aria-labelledby="headline">
+        <div className="stage" data-stage="hero" aria-hidden="true">
+          <canvas />
         </div>
-        <figure className="portrait">
-          <img
-            src="/profile.webp"
-            width={900}
-            height={1015}
-            alt="Zain Ali standing in front of a chalkboard"
-            fetchPriority="high"
-            decoding="async"
-            style={{ backgroundImage: `url(${portraitPlaceholder})` }}
-          />
-        </figure>
-      </div>
-    </section>
+        <div className="wrap hero-in">
+          <div className="hero-copy">
+            <p className="kicker">
+              Research engineer · {profile.role}, {profile.company}
+            </p>
+            <h1 id="headline">
+              {home.lead} <span className="dim">{home.leadDim}</span>
+            </h1>
+          </div>
+          <ul className="hero-facts">
+            {facts.map(([b, rest]) => (
+              <li key={b}>
+                <b>{b}</b> {rest}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <script
+          type="importmap"
+          data-keep=""
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({ imports: { three: THREE_URL } }),
+          }}
+        />
+        <script type="module" src="/fig0.js" data-keep="" />
+      </section>
+    </>
   );
 }

@@ -1,27 +1,34 @@
-import { links } from "@/lib/content";
+import { home, links } from "@/lib/content";
 import Arrow from "@/components/ui/Arrow";
 
-/** The email, large, and the two other places to find him. */
+/** One line, the email as large as a headline, and the two other places to find him. */
 export default function Contact() {
   const email = links.find((l) => l.label === "Email")!;
   const rest = links.filter((l) => l.label !== "Email");
   return (
-    <section id="contact" className="wrap sec contact" aria-labelledby="h-contact">
-      <div className="grid">
-        <h2 className="sec-title" id="h-contact">
-          Contact
+    <section id="contact" className="panel contact" aria-labelledby="h-contact">
+      <div className="wrap sec">
+        <h2 className="eyebrow" id="h-contact">
+          {home.contactLine}
         </h2>
-        <div className="sec-body">
-          <a className="mail" href={email.href}>
-            {email.href.replace(/^mailto:/, "")}
-          </a>
-          <div className="actions">
-            {rest.map((l) => (
-              <a key={l.label} className="btn" href={l.href} target="_blank" rel="noreferrer noopener">
-                {l.label} <Arrow />
-              </a>
-            ))}
-          </div>
+        <a className="mail" href={email.href}>
+          {/* a phone breaks the address at the @, not mid-word */}
+          {(() => {
+            const [user, domain] = email.href.replace(/^mailto:/, "").split("@");
+            return (
+              <>
+                {user}
+                <wbr />@{domain}
+              </>
+            );
+          })()}
+        </a>
+        <div className="links">
+          {rest.map((l) => (
+            <a key={l.label} className="go" href={l.href} target="_blank" rel="noreferrer noopener">
+              {l.label} <Arrow />
+            </a>
+          ))}
         </div>
       </div>
     </section>
