@@ -70,7 +70,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
   return (
     <article className="wrap case" id="case">
       <p className="crumb">
-        <a href="/#paper">← Back</a>
+        <a href="/#papers">← Papers</a>
       </p>
       <header className="page-head">
         <h1>{paper.shortTitle}</h1>

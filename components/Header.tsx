@@ -1,26 +1,24 @@
 import { profile } from "@/lib/content";
 
-const SECTIONS = [
-  { href: "/#projects", label: "Projects" },
-  { href: "/#paper", label: "Paper" },
-  { href: "/#experience", label: "Experience" },
-  { href: "/#contact", label: "Contact" },
+/** The home page's sections, in page order. */
+export const SECTIONS = [
+  { id: "work", label: "Work" },
+  { id: "papers", label: "Papers" },
+  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ] as const;
 
-/** Name and role on the left, four destinations on the right. Plain anchors, no JavaScript. */
+/** His name on the left, four places to go on the right. Plain anchors, no JavaScript. */
 export default function Header() {
   return (
-    <header className="wrap top">
-      <div className="grid">
+    <header className="top">
+      <div className="wrap">
         <a className="id" href="/">
-          <span className="id-name">{profile.name}</span>
-          <span className="id-role">
-            {profile.role} at {profile.company}
-          </span>
+          {profile.name}
         </a>
         <nav className="nav" aria-label="Sections">
           {SECTIONS.map((s) => (
-            <a key={s.href} href={s.href}>
+            <a key={s.id} href={`/#${s.id}`}>
               {s.label}
             </a>
           ))}

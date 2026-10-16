@@ -69,7 +69,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
   return (
     <article className="wrap case" id={ARTICLE_ID}>
       <p className="crumb">
-        <a href="/#projects">← All projects</a>
+        <a href={`/#${system.slug}`}>← All work</a>
       </p>
       <header className="page-head">
         <h1>{system.name}</h1>
@@ -80,7 +80,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
           </a>
           {ledger.length ? (
             <a className="btn" href={`/said-no/#no-${system.slug}`}>
-              What didn’t work ({ledger.length})
+              What didn’t work · {ledger.length}
             </a>
           ) : null}
         </div>

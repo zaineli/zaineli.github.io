@@ -37,12 +37,14 @@ export default function SaidNo() {
 
   return (
     <article className="wrap said">
+      <p className="crumb">
+        <a href="/#work">← All work</a>
+      </p>
       <header className="page-head">
         <h1>What didn’t work</h1>
         <p className="page-lede">
-          A portfolio of only successes isn’t proof of good judgement. Here is everything in these projects that
-          didn’t work, <span className="count">{negativeCount}</span> things in all, each with the number that showed
-          it.
+          A portfolio of only successes isn’t proof of good judgement. Here is everything in these projects that didn’t
+          work, <span className="count">{negativeCount}</span> things in all, each with the number that showed it.
         </p>
       </header>
       {groups.map((g) => (
