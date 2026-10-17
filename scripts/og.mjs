@@ -1,7 +1,8 @@
 /**
- * The social card: the real hero — headline, buttons, portrait — captured
- * from the built site, so what a link preview shows is
- * what the page is. Serves out/ itself; run after `pnpm build`.
+ * The social card: the real first screen — the first frame and Fig. 0, the
+ * ceramic knot — captured from the built site, so what a link preview shows
+ * is what the page is. Reduced motion makes the frame the same every run.
+ * Serves out/ itself; run after `pnpm build`.
  */
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
@@ -21,19 +22,14 @@ const server = createServer(async (req, res) => {
 });
 await new Promise((r) => server.listen(PORT, r));
 
-const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1200, height: 700 }, deviceScaleFactor: 1 });
+const GL = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"];
+const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM, args: GL } : { args: GL });
+// The first screen at the card's own size: the layout fits the model into it.
+const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1, reducedMotion: "reduce" });
 await page.goto(`http://localhost:${PORT}/`, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
-// The sheet at 1200 wide, margins included, down to just under the title block.
-const box = await page.evaluate(() => {
-  const t = document.querySelector(".hero h1").getBoundingClientRect();
-  const s = document.querySelector(".hero .now").getBoundingClientRect();
-  const p = document.querySelector(".portrait img").getBoundingClientRect();
-  return { top: t.top, bottom: Math.max(s.bottom, p.bottom) };
-});
-const y = Math.max(0, Math.round(box.bottom + 28 - 630));
-await page.screenshot({ path: "app/opengraph-image.png", clip: { x: 0, y, width: 1200, height: 630 } });
+await page.waitForTimeout(4000);
+await page.screenshot({ path: "app/opengraph-image.png" });
 await browser.close();
 server.close();
-console.log(`og: app/opengraph-image.png written (1200×630 from y=${y})`);
+console.log("og: app/opengraph-image.png written (1200×630)");
