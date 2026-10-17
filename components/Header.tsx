@@ -2,13 +2,14 @@ import { profile } from "@/lib/content";
 
 /** The home page's sections, in page order. */
 export const SECTIONS = [
+  { id: "about", label: "About" },
   { id: "work", label: "Work" },
   { id: "papers", label: "Papers" },
-  { id: "about", label: "About" },
+  { id: "interests", label: "Interests" },
   { id: "contact", label: "Contact" },
 ] as const;
 
-/** His name on the left, four places to go on the right. Plain anchors, no JavaScript. */
+/** His name on the left, five places to go on the right. Plain anchors, no JavaScript. */
 export default function Header() {
   return (
     <header className="top">

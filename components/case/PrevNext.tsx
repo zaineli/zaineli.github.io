@@ -3,7 +3,7 @@ export interface Neighbour {
   name: string;
 }
 
-/** The closed ring through the four systems and the paper, between two heavy rules. */
+/** The closed ring through the selected systems and the paper (components/case/Ring.ts). */
 export default function PrevNext({ prev, next }: { prev: Neighbour; next: Neighbour }) {
   return (
     <nav className="pn" aria-label="Other write-ups">

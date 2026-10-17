@@ -1,11 +1,12 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import { publications, shownLedger, systems, type Publication, type SystemSection } from "@/lib/content";
+import { publications, shownLedger, type Publication, type SystemSection } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 import { smart } from "@/lib/typo";
 import CaseSection from "@/components/case/CaseSection";
 import CopyBib from "@/components/case/CopyBib";
 import PrevNext from "@/components/case/PrevNext";
+import { around } from "@/components/case/Ring";
 import Schematic from "@/components/Schematic";
 import Arrow from "@/components/ui/Arrow";
 
@@ -49,14 +50,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
   const paper = findPaper(slug);
   if (!paper) notFound();
 
-  const i = publications.findIndex((p) => p.slug === paper.slug);
-  const chain = [
-    ...systems.map((s) => ({ href: `/systems/${s.slug}/`, name: s.name })),
-    ...publications.map((p) => ({ href: `/papers/${p.slug}/`, name: p.shortTitle })),
-  ];
-  const index = systems.length + i;
-  const prev = chain[(index - 1 + chain.length) % chain.length];
-  const next = chain[(index + 1) % chain.length];
+  const ring = around(`/papers/${paper.slug}/`);
   const ledger = shownLedger(paper.ledger ?? []);
 
   // The paper's figures, each as its own section with the paper's verbatim
@@ -74,7 +68,8 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
       </p>
       <header className="page-head">
         <h1>{paper.shortTitle}</h1>
-        <p className="page-lede">{paper.plain?.line ?? paper.title}</p>
+        {/* the short title is the row's; here it expands to the paper's full title */}
+        <p className="page-lede">{paper.title}</p>
         <div className="actions">
           {paper.media.pdf ? (
             <a className="btn btn-primary" href={paper.media.pdf} target="_blank" rel="noreferrer noopener">
@@ -82,7 +77,14 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
             </a>
           ) : null}
           {paper.bibtex ? <CopyBib text={paper.bibtex} /> : null}
+          {/* the PDF already has its button; the rest are pages on this site */}
+          {(paper.links ?? []).filter((l) => l.href !== paper.media.pdf).map((l) => (
+            <a key={l.href} className="btn" href={l.href}>
+              {l.label}
+            </a>
+          ))}
         </div>
+        {paper.pending ? <p className="pending">{paper.pending}</p> : null}
       </header>
 
       {paper.plain ? (
@@ -98,7 +100,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
       <section className="cs tech" id="abstract">
         <h2>Abstract</h2>
         <div className="body">
-          <p className="ptitle">{paper.title}</p>
+          {paper.plain ? <p className="ptitle">{paper.plain.line}</p> : null}
           <p className="authors">
             {(paper.authorList ?? []).map((a, i) => (
               <span key={a.name}>
@@ -160,7 +162,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
         </section>
       ) : null}
 
-      <PrevNext prev={prev} next={next} />
+      {ring ? <PrevNext prev={ring.prev} next={ring.next} /> : null}
     </article>
   );
 }

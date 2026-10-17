@@ -1,4 +1,4 @@
-import { negativeCount, publications, shownLedger, systems, type LedgerKind } from "@/lib/content";
+import { negativeCount, publications, shownLedger, systems, techPath, type LedgerKind } from "@/lib/content";
 import { smart } from "@/lib/typo";
 
 /** What each kind of "no" is, in words a visitor knows. */
@@ -21,7 +21,8 @@ export default function SaidNo() {
       id: s.slug,
       name: s.name,
       line: s.plain.line,
-      href: (anchor: string) => `/systems/${s.slug}/#${anchor}`,
+      // a brief page sends the reader to the technical page, where the section is
+      href: (anchor: string) => `${techPath(s)}#${anchor}`,
       page: `/systems/${s.slug}/`,
       rows: shownLedger(s.ledger),
     })),

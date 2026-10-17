@@ -9,10 +9,11 @@
  *   - the first screen at 1440×900 holds the line over it, the opening
  *     sentence and the three facts; at 390 it holds the sentence;
  *   - one family (Archivo, loaded) for every word; nothing under 13px;
- *   - the colour law: red only on what said no;
+ *   - the colour law: red only on what said no, and as the hover colour
+ *     (the row whose knot is showing);
  *   - every work row opens its write-up and prints a number;
  *   - the count of what didn't work agrees on both pages and with its rows;
- *   - write-ups have one h1, a figure and a plain summary;
+ *   - write-ups have one h1, a figure and a plain summary; technical pages lead back to their brief;
  *   - no route logs an error; hover changes no content.
  * Screenshots land in scripts/.qa/; the exit code is what matters.
  */
@@ -21,7 +22,7 @@ import { readFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { chromium } from "playwright";
-import { publications, systems } from "../lib/content.ts";
+import { featured, publications, systems } from "../lib/content.ts";
 
 const OUT = "out";
 const SHOTS = "scripts/.qa";
@@ -65,8 +66,10 @@ const browser = await chromium.launch(
 );
 
 // The routes follow the content model, so a withheld system (GEDANKEN_PUBLIC) is neither checked nor expected.
-const ROUTES = ["/", "/said-no/", ...systems.map((s) => `/systems/${s.slug}/`), ...publications.map((p) => `/papers/${p.slug}/`)];
-const CASES = ROUTES.filter((r) => r.startsWith("/systems/") || r.startsWith("/papers/"));
+// A selected system's page is a brief; its long write-up is on /technical/.
+const TECH = systems.filter((s) => s.brief).map((s) => `/systems/${s.slug}/technical/`);
+const ROUTES = ["/", "/said-no/", ...systems.map((s) => `/systems/${s.slug}/`), ...TECH, ...publications.map((p) => `/papers/${p.slug}/`)];
+const CASES = ROUTES.filter((r) => (r.startsWith("/systems/") || r.startsWith("/papers/")) && !TECH.includes(r));
 const REDS = ["rgb(198, 58, 27)"];
 
 const errors = [];
@@ -181,7 +184,8 @@ for (const path of ROUTES) {
       const FAMS = ["--font-archivo"].map(name);
       const first = (el) => getComputedStyle(el).fontFamily.split(",")[0].trim().replace(/['"]/g, "");
       const out = { family: [], small: [], red: [], loaded: FAMS.filter((f) => !document.fonts.check(`16px "${f}"`)) };
-      const RED_OK = "[data-ink='neg'], .neg, .i-neg, .note, .count, .lrow .x, .sn.hat, .nd.hat, .lines text.neg, .ledger";
+      // round 27: red is also the hover colour, so the row whose knot is showing may carry it
+      const RED_OK = "[data-ink='neg'], .neg, .i-neg, .note, .count, .lrow .x, .sn.hat, .nd.hat, .lines text.neg, .ledger, a.row.here";
       for (const el of document.querySelectorAll("body *")) {
         if (el.closest("[data-sr], .sr, .skip, svg defs, script, style, noscript, pre")) continue;
         const cs = getComputedStyle(el);
@@ -214,7 +218,7 @@ for (const path of ROUTES) {
       num: c.querySelector(".row-num")?.textContent.trim() ?? "",
     })),
   );
-  if (entries.length !== systems.length) fail(`/: ${entries.length} work rows for ${systems.length} systems`);
+  if (entries.length !== featured.length) fail(`/: ${entries.length} work rows for ${featured.length} selected systems`);
   for (const c of entries) {
     if (c.writeup !== `/systems/${c.id}/`) fail(`/: row ${c.id} does not open its write-up`);
     if (!c.num) fail(`/: row ${c.id} has no number`);
@@ -248,6 +252,22 @@ for (const path of CASES) {
   if (c.h1 !== 1) fail(`${path}: ${c.h1} h1 elements`);
   if (!c.figs) fail(`${path}: no figure`);
   if (!c.summary) fail(`${path}: no plain summary`);
+  const name = path.replace(/\//g, "_").replace(/^_|_$/g, "");
+  await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, timeout: 120000 });
+  await ctx.close();
+}
+
+/* ---- 10b. technical pages: one h1, a figure, and the way back -------- */
+for (const path of TECH) {
+  const { ctx, page } = await open(path, 1440);
+  const c = await page.evaluate(() => ({
+    h1: document.querySelectorAll("h1").length,
+    figs: document.querySelectorAll(".cfig").length,
+    back: document.querySelectorAll('.crumb a[href^="/systems/"]').length,
+  }));
+  if (c.h1 !== 1) fail(`${path}: ${c.h1} h1 elements`);
+  if (!c.figs) fail(`${path}: no figure`);
+  if (!c.back) fail(`${path}: no way back to the brief`);
   const name = path.replace(/\//g, "_").replace(/^_|_$/g, "");
   await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, timeout: 120000 });
   await ctx.close();

@@ -1,7 +1,7 @@
-import { education, experience, priors, profile } from "@/lib/content";
+import { education, experience, home, priors } from "@/lib/content";
 import { portraitPlaceholder } from "@/lib/portrait";
 
-/** His photo, where he lives in his own words, every role on one line, and where he studied. */
+/** Second on the page: his photo, who he is and how he works, every role on one line, and where he studied. */
 export default function Record() {
   const imo = priors.find((p) => p.label === "International Mathematical Olympiad");
   return (
@@ -23,7 +23,8 @@ export default function Record() {
             />
           </figure>
           <div className="about-text">
-            <p className="lives">{profile.lives}</p>
+            <p className="lives">{home.aboutLine}</p>
+            <p className="about-more">{home.aboutMore}</p>
             <ol className="roles">
               {experience.map((r, i) => (
                 <li key={r.company}>

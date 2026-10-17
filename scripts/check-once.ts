@@ -15,7 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allowlist, bannedPatterns, bannedStrings, heldStrings, homeFacts } from "../lib/facts.ts";
-import { negativeCount, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems } from "../lib/content.ts";
+import { negativeCount, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems, techPath } from "../lib/content.ts";
 import { slugify } from "../lib/slug.ts";
 
 const OUT = "out";
@@ -116,7 +116,9 @@ const needId = (page: string, id: string, what: string) => {
   if (!readFileSync(page, "utf8").includes(`id="${id}"`)) failures.push(`${page} has no #${id} (${what})`);
 };
 for (const s of systems) {
-  const page = `${OUT}/systems/${s.slug}/index.html`;
+  // where the sections are: the system's own page, or its technical page behind a brief
+  const page = `${OUT}${techPath(s)}index.html`;
+  if (s.brief) needId(`${OUT}/systems/${s.slug}/index.html`, "case", `${s.slug} brief page`);
   const ids = new Set(shownSections(s).map((x) => slugify(x.heading)));
   for (const e of shownLedger(s.ledger)) {
     if (!ids.has(e.anchor)) failures.push(`${s.slug} ledger "${e.term}" points at a hidden or missing section #${e.anchor}`);

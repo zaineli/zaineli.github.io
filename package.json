@@ -2,7 +2,7 @@
   "name": "zainali-portfolio",
   "version": "0.1.0",
   "private": true,
-  "description": "Zain Ali — VP Engineering & Product at Alexein AI. RL, world models and search: four systems built from scratch, one preprint, and every result that said no.",
+  "description": "Zain Ali — VP Engineering & Product at Alexein AI. RL, world models and search: six systems built from scratch, three papers, and every result that said no.",
   "scripts": {
     "dev": "next dev",
     "build": "next build && node scripts/strip-js.mjs && node scripts/check-once.ts",

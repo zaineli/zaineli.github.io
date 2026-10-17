@@ -4,7 +4,7 @@
  * One glossy white knot, glazed like porcelain, turning slowly over a soft
  * shadow. Each piece of work has its own knot: point at a project (on a
  * phone, scroll it to the middle of the screen) and the knot becomes that
- * project's torus knot — engram a (2,3) trefoil, loci a (3,4), and so on —
+ * project's torus knot — gedanken a (4,5), loci a (3,4), and so on —
  * and the caption under it names the pair. The cursor tilts it a little.
  *
  * Two views of the one knot: the opening panel, and a close view that
@@ -25,6 +25,7 @@ function boot() {
   /* ---- the knots: one shape per piece of work ---------------------- */
   const FORMS = {
     home: [2, 5],
+    gedanken: [4, 5],
     engram: [2, 3],
     loci: [3, 4],
     whetstone: [2, 7],

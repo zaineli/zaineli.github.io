@@ -9,16 +9,16 @@
  * Imported with the .ts extension so Node can load it natively.
  * ------------------------------------------------------------------ */
 
-import { education, home, profile, publications, systems } from "./content.ts";
+import { education, featured, home, interests, profile, publications } from "./content.ts";
 
 const facts: string[] = [];
 
 // The opening sentence, in its two weights
-facts.push(home.lead, home.leadDim);
+facts.push(home.setup, home.claim);
 
-// Work: each project's field and number; the ledger
-for (const s of systems) {
-  facts.push(home.fields[s.slug] ?? "", s.plain.num);
+// Work: each selected project's field, what its number counts, and the number; the ledger
+for (const s of featured) {
+  facts.push(home.fields[s.slug] ?? "", home.numCaps[s.slug] ?? "", s.plain.num);
 }
 facts.push(home.ledger);
 
@@ -31,8 +31,12 @@ for (const p of publications) {
   facts.push(p.plain.line, p.plain.num);
 }
 
+// Interests: each position once
+facts.push(home.interestsLine);
+for (const it of interests) facts.push(it.take);
+
 // About
-facts.push(profile.lives, education.degree, education.plain);
+facts.push(home.aboutLine, home.aboutMore, education.degree, education.plain);
 
 // Contact
 facts.push(home.contactLine);
@@ -44,8 +48,8 @@ export const homeFacts: string[] = Array.from(new Set(facts.filter((f) => f.leng
 export const allowlist: Record<string, number> = {
   // the header and the footer
   [profile.name]: 2,
-  // the line over the opening sentence and the first role
-  [profile.company]: 2,
+  // the line over the opening sentence, the introduction, and the first role
+  [profile.company]: 3,
   [profile.role]: 2,
   // the lab row, the education line, and the entrance test it names
   NUST: 3,

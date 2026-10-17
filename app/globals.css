@@ -8,9 +8,10 @@
    white knot over a soft shadow (Fig. 0); a close view of the same knot
    stays beside the work and becomes each project's own knot as you point
    at it. One family, Archivo: light for anything large, regular for
-   anything read. Ink for what you read, grey for what explains it, blue
-   for the row the knot is showing, and red only on what said no. No
-   labels in capitals, no numbered sections.
+   anything read. Ink for what you read, grey for what explains it. Red
+   is the hover colour (round 27: hover, focus, the row the knot is
+   showing) and otherwise marks only what said no. No labels in capitals,
+   no numbered sections.
    ================================================================== */
 
 @theme {
@@ -30,8 +31,9 @@
   --rule: #e2e2db;
   --rule-2: #c8c8bf;
   --tint: #f2f2ed;
-  --blue: #2448ff;
   --coral: #c63a1b; /* 5.0:1 on --panel */
+  /* round 27: red is the hover colour — hover, focus, selection, the row whose knot is showing */
+  --accent: var(--coral);
   --body: #34342f;
   --cobalt: var(--fg);
   --brick: var(--coral);
@@ -100,11 +102,11 @@ button {
   color: inherit;
 }
 ::selection {
-  background: var(--blue);
+  background: var(--accent);
   color: #fff;
 }
 :focus-visible {
-  outline: 2px solid var(--blue);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .skip {
@@ -174,8 +176,8 @@ p {
   transition: border-color 0.2s, color 0.2s;
 }
 .go:hover {
-  border-color: var(--blue);
-  color: var(--blue);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ---------- header: over the top of the first frame ---------- */
@@ -266,11 +268,12 @@ p {
   margin-bottom: 20px;
 }
 .hero h1 {
-  font-size: clamp(42px, 5vw, 78px);
-  line-height: 0.98;
+  font-size: clamp(40px, 4.3vw, 68px);
+  line-height: 1;
   font-weight: 290;
-  letter-spacing: -0.042em;
-  max-width: 10.6em;
+  letter-spacing: -0.04em;
+  /* the line stays clear of the knot's left lobe */
+  max-width: min(9.8em, 47vw);
   text-wrap: balance;
 }
 .hero-facts {
@@ -336,6 +339,12 @@ p {
   font-weight: 290;
   letter-spacing: -0.04em;
 }
+/* papers: one size for every title, so the list reads as one list */
+.row-name.paper {
+  font-size: clamp(26px, 2.3vw, 36px);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
 .row-name.small {
   font-size: clamp(19px, 1.6vw, 24px);
   letter-spacing: -0.015em;
@@ -361,7 +370,7 @@ a.row:focus-visible {
 /* the row whose knot is showing */
 a.row.here .row-name,
 a.row.here .row-num {
-  color: var(--blue);
+  color: var(--accent);
 }
 .rows:hover a.row:not(:hover),
 .rows:hover a.row:not(:hover) .row-field {
@@ -369,6 +378,42 @@ a.row.here .row-num {
 }
 .row.quiet {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+/* round 26: what the project is, in ink; what its number counts, under it */
+.row-field .what {
+  display: block;
+  color: var(--fg);
+}
+.row-field .counts {
+  display: block;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--fg-2);
+}
+.rows:hover a.row:not(:hover) .row-field .what,
+.rows:hover a.row:not(:hover) .row-field .counts {
+  color: var(--fg-3);
+}
+/* the work that moved off the rows, on one line beneath them */
+.also {
+  margin-top: 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  max-width: 40em;
+}
+.also a {
+  color: var(--fg);
+  border-bottom: 1px solid var(--rule-2);
+  transition: border-color 0.2s, color 0.2s;
+}
+.also a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.also + .ledger {
+  margin-top: 14px;
 }
 .ledger {
   display: inline-flex;
@@ -404,6 +449,40 @@ a.row.here .row-num {
   text-wrap: balance;
 }
 
+/* ---------- interests: a field, and the position held on it ---------- */
+.int-lede {
+  font-size: clamp(22px, 2.1vw, 32px);
+  line-height: 1.22;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  max-width: 24em;
+  text-wrap: balance;
+}
+.ints {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--gap);
+  row-gap: 40px;
+  margin-top: 48px;
+}
+.ints li {
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+}
+.ints h3 {
+  font-size: clamp(22px, 1.9vw, 28px);
+  line-height: 1.15;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+.ints p {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--body);
+  max-width: 30em;
+}
+
 /* ---------- about ---------- */
 .about {
   display: grid;
@@ -432,6 +511,13 @@ a.row.here .row-num {
   font-weight: 300;
   letter-spacing: -0.025em;
   text-wrap: balance;
+}
+.about-more {
+  margin-top: 18px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--body);
+  max-width: 36em;
 }
 .roles {
   margin-top: 36px;
@@ -486,8 +572,8 @@ a.row.here .row-num {
   transition: border-color 0.2s, color 0.2s;
 }
 .contact .mail:hover {
-  border-color: var(--blue);
-  color: var(--blue);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .contact .links {
   display: flex;
@@ -585,9 +671,73 @@ a.row.here .row-num {
   color: var(--panel);
 }
 .btn-primary:hover {
-  background: var(--blue);
-  border-color: var(--blue);
+  background: var(--accent);
+  border-color: var(--accent);
 }
+/* round 26: the brief page — where it stands, then four parts and three numbers */
+.standing {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.pending {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.bf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(28px, 4vw, 72px);
+  row-gap: 44px;
+  margin-top: 72px;
+}
+.bf-part {
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+}
+.bf-part h2 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 10px;
+}
+.bf-part p {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--body);
+  max-width: 34em;
+}
+.bf-part.lim p {
+  color: var(--fg-2);
+}
+.bf-nums {
+  margin-top: 64px;
+}
+.bf-fig,
+.bf-how {
+  margin-top: 96px;
+}
+.bf-fig h2,
+.bf-how h2 {
+  font-size: clamp(26px, 2.4vw, 36px);
+  line-height: 1.08;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+}
+.bf-how .schem {
+  margin-top: 0;
+}
+.bf-more {
+  margin-top: 72px;
+}
+.case.brief .pn {
+  margin-top: 96px;
+}
+
 .summary {
   margin-top: 72px;
   display: grid;
@@ -1272,6 +1422,9 @@ table.t [data-own] {
   .hero-facts {
     display: none;
   }
+  .ints {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 899px) {
   /* the close view rides at the top of the work frame; the rows pass under it */
@@ -1315,6 +1468,10 @@ table.t [data-own] {
   .lrows {
     grid-column: 1 / -1;
   }
+  .bf {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 32px;
+  }
 }
 @media (max-width: 720px) {
   :root {
@@ -1339,7 +1496,8 @@ table.t [data-own] {
     padding-bottom: 26px;
   }
   .hero h1 {
-    font-size: clamp(36px, 10.4vw, 54px);
+    font-size: clamp(32px, 9vw, 46px);
+    max-width: none;
   }
   .row {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1393,6 +1551,18 @@ table.t [data-own] {
   .cs .note {
     grid-template-columns: 1fr;
     row-gap: 16px;
+  }
+  .ints {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 28px;
+    margin-top: 36px;
+  }
+  .bf-part p {
+    font-size: 17px;
+  }
+  .bf-fig,
+  .bf-how {
+    margin-top: 64px;
   }
   .pn {
     grid-template-columns: 1fr;

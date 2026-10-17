@@ -9,12 +9,16 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 /**
  * The first panel: the ceramic knot (Fig. 0, drawn by /fig0.js — the only
  * script the home page ships, with three.js) on its right; one sentence in
- * two weights at its lower left, and three facts in the corner.
+ * two weights at its lower left (the setup grey, the claim ink), and three
+ * facts in the corner.
  */
 export default function Hero() {
+  // The papers line counts each status as the data states it, so it cannot drift from the Papers rows.
+  const statuses = [...publications.map((p) => p.tally ?? "preprint"), ...listings.map((l) => l.status.toLowerCase())];
+  const tally = [...new Set(statuses)].map((st) => `${numberWord(statuses.filter((x) => x === st).length)} ${st}`);
   const facts = [
     [`${cap(numberWord(systems.length))} systems`, "built from scratch"],
-    [`${cap(numberWord(publications.length + listings.length))} papers`, "one preprint, one in submission"],
+    [`${cap(numberWord(publications.length + listings.length))} papers`, tally.join(", ")],
     [`${negativeCount} results`, "that said no, published"],
   ];
   return (
@@ -28,8 +32,9 @@ export default function Hero() {
             <p className="kicker">
               Research engineer · {profile.role}, {profile.company}
             </p>
+            {/* the setup in grey, the claim in ink */}
             <h1 id="headline">
-              {home.lead} <span className="dim">{home.leadDim}</span>
+              <span className="dim">{home.setup}</span> {home.claim}
             </h1>
           </div>
           <ul className="hero-facts">

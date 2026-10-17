@@ -298,9 +298,16 @@ export const profile = {
   lede: "Most AI today is very good at repeating patterns. I work on the parts it is still missing.",
   now: "We build AI agents that keep their memory between tasks.",
   projectsIntro: "All open source. I build each piece from scratch, test it honestly, and publish what failed too.",
+  /**
+   * Round 26: the manifesto as an argument. Imitation's objective is the
+   * data it imitates, so it cannot be the whole road; the step past it is
+   * learning from consequences, which is what RL is.
+   */
   belief: {
-    doubt: "I don’t think bigger language models alone get us to human-level AI.",
-    bet: "I think learning by trial and error does.",
+    // Round 29: swapped with the hero. Prediction (the next token) is what scale has
+    // delivered; deciding (the next action, corrected by what happens) is the open problem.
+    doubt: "AI has learned to predict the next word.",
+    bet: "I work on the harder problem: choosing the next action.",
   },
   principles: [
     "I test every idea against the simplest thing that could beat it.",
@@ -339,20 +346,79 @@ export const links: Link[] = [
  * ------------------------------------------------------------------ */
 
 export const home = {
-  /** The hero sentence, in two weights: what he builds, then how. */
-  lead: "AI that remembers, imagines,",
-  leadDim: "and learns from its mistakes.",
+  /**
+   * Round 29: the hero is the bet, in ten words. A learner that copies is
+   * bounded by what it copies; one that acts and is scored by outcomes is
+   * not (self-play went past human play this way). The line it replaced
+   * now stands in the belief panel.
+   */
+  setup: "Imitation can only match its teacher.",
+  claim: "Experience can surpass it.",
   /** Each project's field, in a few words. */
   fields: {
+    gedanken: "Einstein’s 1907 step, rebuilt as a test for AI",
+    whetstone: "Self-improvement, audited for reward hacking",
+    loci: "A zero-fit theory of where a memory is filed",
     engram: "Memory, modelled on the hippocampus",
-    loci: "Where memories are filed",
-    whetstone: "Catching AI that games its own tests",
     spindle: "An inference engine from scratch",
     reverie: "Planning inside a learned world",
   } as Record<string, string>,
-  ledger: "things that didn’t work, published with the rest",
-  contactLine: "Let’s talk.",
+  /** What the row's number counts, under the field: the number never stands alone. */
+  numCaps: {
+    gedanken: "Times it checked its own leap, unprompted",
+    whetstone: "Accepted gains that only gamed a visible test",
+    loci: "Mean error predicting 156 runs it never saw",
+  } as Record<string, string>,
+  /** Under the three rows: the work that moved off the home page, still written up. */
+  alsoLine: "Also built, and written up in full:",
+  ledger: "things that didn’t work, each with the number that showed it",
+  /** Round 27: the introduction, second on the page, under the first frame. Its role line is his CV's own. */
+  aboutLine:
+    "I’m Zain. I lead engineering and product at Alexein AI, where we build agents on reinforcement learning and world models, with a memory architecture modelled on human cognition.",
+  aboutMore:
+    "I read the paper, rebuild the system from scratch, and report what the numbers said, especially when they said no.",
+  interestsLine: "What I work on, and the position I hold on each.",
+  contactLine: "Bring a hard problem and a way to check the answer.",
 };
+
+/* ------------------------------------------------------------------ *
+ * Round 26 — interests. Each is a field he works in and the position he
+ * holds on it: one claim, and the reason it follows. No numbers here, so
+ * nothing on this panel needs a source beyond the argument itself.
+ * ------------------------------------------------------------------ */
+
+export interface Interest {
+  name: string;
+  /** The position: a claim and its reason, in at most two sentences. */
+  take: string;
+}
+
+export const interests: Interest[] = [
+  {
+    name: "Reinforcement learning",
+    take: "A reward is a specification, and its loopholes are the first thing a strong policy finds. So I write the check before I train the policy.",
+  },
+  {
+    name: "World models",
+    take: "A plan is only as good as the worst prediction along it. Find where the model goes blind before trusting anything it plans.",
+  },
+  {
+    name: "Combinatorial search",
+    take: "In an exponential space the heuristic is the algorithm. Learn the heuristic; keep the search sound.",
+  },
+  {
+    name: "Agentic AI",
+    take: "An agent is a loop, and a loop compounds whatever its verifier misses. The verifier, not the model, sets the ceiling.",
+  },
+  {
+    name: "Memory",
+    take: "A context window is a buffer, not a memory. Memory is three decisions, what to keep, where to file it and what to forget, and each one can be measured.",
+  },
+  {
+    name: "LLM engineering",
+    take: "Single-stream decoding is bound by memory bandwidth, not FLOPs. The speed lives in the KV cache and the scheduler.",
+  },
+];
 /* ------------------------------------------------------------------ *
  * How he works: five lines, verbatim, from files he wrote and committed —
  * spindle's public README, and the engineering standard and research rules
@@ -409,6 +475,7 @@ export const experience: Role[] = [
     location: "California, United States",
     points: [
       "Lead engineering and product for an agent platform built on reinforcement learning and world models rather than prompt pipelines.",
+      "Building an agentic memory architecture that mimics human cognition: how the brain encodes, consolidates and recalls.",
       "Own the technical direction across the research and serving stack, from what gets modelled to what it costs to run.",
     ],
     outcomes: [],
@@ -542,22 +609,45 @@ export interface System {
   repo: string;
   /** generateMetadata keywords only. */
   metaKeywords: string[];
-  /** Long-form case study. */
+  /** Long-form case study. With a `brief`, it moves to /systems/<slug>/technical/. */
   sections: SystemSection[];
+  /** The short page: what a visitor reads first. Selected work has one; archived work keeps its long page. */
+  brief?: Brief;
+  /** One line under the page's question: where the work stands. */
+  status?: string;
+  /** False while the repository is private: the page says when the code goes public instead of linking it. */
+  repoPublic?: boolean;
+}
+
+/**
+ * The short page of a selected system, in four exact parts and three numbers.
+ * Each part is one or two sentences; anything longer lives on the technical page.
+ */
+export interface Brief {
+  question: string;
+  built: string;
+  found: string;
+  limits: string;
+  /** The one figure the short page shows: an id from `figures`. */
+  figure: string;
+  /** Three numbers, each with what it counts. */
+  numbers: [Readout, Readout, Readout];
 }
 
 const systemList: System[] = [
   {
     slug: "gedanken",
     name: "gedanken",
-    tagline: "The Einstein test, made runnable",
+    tagline: "A runnable test of Einstein’s 1907 step",
     pitch:
-      "A runnable Einstein test: universes where a clock prediction is right only if the agent extends a frame–field equivalence that matched decoys break. Preregistered; GPT-6 Luna can run the check when asked but almost never thinks to.",
+      "A preregistered, runnable test of Einstein’s 1907 step: universes where a clock prediction is right only if the agent extends an equivalence that matched decoys break. GPT-6 Luna runs the deciding experiment when told what to compare, and almost never unprompted.",
     year: "2026",
     abstract:
-      "Hassabis has proposed a test for general intelligence: give a system a knowledge cutoff of 1911 and see whether it comes up with general relativity. It cannot be run on real physics, because every model has read the answer. gedanken builds a runnable analogue of the step Einstein took in 1907: procedurally generated universes in which a textbook theory is exact on every experiment an agent can run, and a clock-rate prediction in a regime no experiment reaches is right only if the agent extends a frame–field equivalence that holds for some kinds of matter and, in matched decoy universes, fails for one. No policy blind to the check can beat 1/2. In a preregistered study GPT-6 Luna found the equivalence in 138 of 140 episodes, checked it in 2, and did not beat 1/2 detectably; asked directly, it ran the decisive experiment in 140 of 140 and answered correctly in 139.",
+      "Hassabis has proposed a test for general intelligence: give a system a knowledge cutoff of 1911 and see whether it comes up with general relativity. It cannot be run on real physics, because every model has read the answer. gedanken builds a runnable analogue of one step, Einstein’s 1907 equivalence argument, and asks a narrower question: does an agent check the premise of an equivalence before extending it? In procedurally generated universes a textbook theory is exact on every experiment the agent can run, and the question asks for a clock-rate ratio in a regime no experiment reaches. In one member of each matched pair the equivalence fails for one kind of matter, which one available experiment reveals, so no policy that skips it can beat 1/2. In a preregistered study GPT-6 Luna ran that experiment in 2 of 140 episodes and extended the equivalence in every answer; asked directly, it ran it in 140 of 140 and gave the right verdict in 139.",
     thread: "Thought experiments and discovery",
-    verdict: "The model can imagine and can check, but does not think to check before it leaps.",
+    verdict: "It can run the check when told what to compare, and almost never makes it unprompted.",
+    status: "Preregistered study · paper prepared for an AAAI-27 workshop, Montréal, February 2027",
+    repoPublic: false,
     // Leads with the number that held, the asked check, so the first red a
     // reader meets is not the first thing under the thesis; the turn under it
     // is the failure, and the figure sets both against the blind ceiling.
@@ -566,12 +656,28 @@ const systemList: System[] = [
       label: "balanced accuracy, asked to check · 70 matched pairs",
       after: "Unasked, it checks 2 of 140.",
     },
-    homeLine: "The model can imagine and can check, but does not think to check before it leaps.",
-    question: "Can a model make Einstein’s 1907 leap, and does it check before it leaps?",
+    homeLine: "It can run the check when told what to compare, and almost never makes it unprompted.",
+    question: "Does an AI check an idea before it trusts it?",
     plain: {
-      line: "Can an AI make Einstein’s leap, and check it before trusting it?",
-      num: "2 of 140",
-      cap: "times the AI checked its own idea before trusting it. When asked to check, it did every time.",
+      line: "Does an AI check an idea before it trusts it?",
+      num: "2/140",
+      cap: "episodes in which GPT-6 Luna ran, unprompted, the one experiment that could refute its leap. Asked to run it, it did in 140 of 140.",
+    },
+    brief: {
+      question:
+        "In 1907 Einstein extended an equivalence from falling bodies to clocks, a regime no experiment of the day could reach. Every model has read that answer, so gedanken rebuilds the step in alien universes no model can have read.",
+      built:
+        "Procedurally generated universes in which a textbook theory is exact on every experiment the agent can run, and the question asks for a clock rate where no experiment reaches. In one universe of each matched pair the equivalence fails for one kind of matter, and one available experiment shows it, so any agent that skips that experiment scores at most 1/2.",
+      found:
+        "GPT-6 Luna found the equivalence in 138 of 140 episodes, ran the deciding experiment in 2, and extended the equivalence in every answer: balanced accuracy 0.479, against a ceiling of 0.5 for any agent that skips the check. Asked whether every kind of matter responds alike, it ran the experiment in 140 of 140 episodes and was right in 139.",
+      limits:
+        "One fully reported model. The setup is recognisably relativistic, so the equivalence may be recalled rather than invented. The asked check was added after the main scores were read, and it scores a verdict, not the clock readout. Nine PPO runs, 9,000,576 episodes in all, never learned to check.",
+      figure: "accuracy",
+      numbers: [
+        { value: "0.479", label: "balanced accuracy end to end; skipping the check caps it at 0.5", negative: true },
+        { value: "0.993", label: "balanced accuracy when asked to check" },
+        { value: "138/140", label: "episodes that found the equivalence" },
+      ],
     },
     no: "The RL arm, my own bet, never made the jump in 9,000,576 episodes.",
     homeFigure: {
@@ -618,16 +724,16 @@ const systemList: System[] = [
       {
         id: "accuracy",
         label: "accuracy",
-        title: "balanced accuracy · 70 matched pairs per arm · 95% intervals in the tables",
+        title: "balanced accuracy · GPT-6 Luna · 70 matched pairs per arm",
         section: "asked-it-checks-every-time",
         kind: "bars",
         max: 1,
         bars: [
-          { label: "end to end (L0)", value: 0.479, display: "0.479", ink: "neg" },
-          { label: "thought experiment handed over (L1)", value: 0.457, display: "0.457", ink: "neg" },
-          { label: "asked to check (S2)", value: 0.993, display: "0.993", ink: "claim" },
+          { label: "end to end", value: 0.479, display: "0.479", ink: "neg" },
+          { label: "the thought experiment handed over", value: 0.457, display: "0.457", ink: "neg" },
+          { label: "asked to check (scores the verdict, not the clock)", value: 0.993, display: "0.993", ink: "claim" },
         ],
-        reference: { value: 0.5, label: "blind ceiling, 1/2" },
+        reference: { value: 0.5, label: "no-check ceiling, 1/2" },
       },
     ],
     caseFigures: [
@@ -742,8 +848,8 @@ const systemList: System[] = [
       {
         heading: "The instrument",
         paragraphs: [
-          "Procedurally generated universes with a free regime, an accelerated “carriage” and a field, every law exact and every name alien and regenerated per universe. A textbook states the incumbent theory, exact on every experiment the laboratory serves, and the carriage’s laws, its clock law included. The field is known only from data. The scored question is the clock-rate ratio between two heights in the field, a regime the laboratory never serves; it is fixed only if the agent adopts “the field is the paired frame, for every process”.",
-          "Each matched pair has two universes with byte-identical texts. In I the identity holds for every kind of object; in D it fails for one consequence class, visible only by querying that class in the field. So every policy that never makes the check scores at most 1/2, and always-jump, never-jump and copy-the-incumbent score exactly 1/2 on every pair. Leak pairs match an I member with a twin no experiment can tell apart from it: beating 1/2 there would mean the instrument leaks.",
+          "Procedurally generated universes with a free regime, an accelerated “carriage” and a field, every law exact and every name alien and regenerated per universe. A textbook states the incumbent theory, exact on every experiment the laboratory serves, and each frame’s kinematics, so the carriage’s clock law follows from it. For three ordinary kinds of matter it also states the field’s law of motion, with a strength to be measured; for a fourth kind, the consequence class, it states none, and the laboratory serves that kind’s motion in the field. The scored question is the clock-rate ratio between two heights in the field, a regime the laboratory never serves; it is fixed only if the agent adopts “the field is the paired frame, for every process”.",
+          "Each matched pair has two universes with byte-identical texts. In I the identity holds for every kind of object; in D it fails for one consequence class, visible only by querying that class in the field. So every policy that never makes the check scores at most 1/2, and the fixed blind policies (always-jump, never-jump) score exactly 1/2 on every pair. Leak pairs match an I member with a twin no experiment can tell apart from it: beating 1/2 there would mean the instrument leaks.",
         ],
         table: {
           head: ["member", "the field acts as the carriage on", "true clock ratio"],
@@ -755,9 +861,9 @@ const systemList: System[] = [
         },
       },
       {
-        heading: "Preregistered before any model ran",
+        heading: "Preregistered before any model ran on a test universe",
         paragraphs: [
-          "The rules were frozen first: the arms, the 70 test pairs and 16 leak pairs, the exact one-sided sign tests and their families, the leak gate as a stop rule, the cost rule that sizes each model’s set from a six-episode practice check, and the stopping rules. Twenty-nine amendments followed, each logged with its reason and with what had been seen when it was made. Four independent audits re-derived the result: every episode re-scored against regenerated universes with 0 mismatches, every transcript matching its recorded fingerprint.",
+          "The rules were frozen first: the arms, the 70 test pairs and 16 leak pairs, the exact one-sided sign tests and their families, the leak gate as a stop rule, the cost rule that sizes each model’s set from a six-episode practice check, and the stopping rules. Twenty-nine amendments followed, each logged with its reason and with what had been seen when it was made; the preregistration is a file in the study’s repository, so its dates are as trustworthy as the commit history. Four independent audits re-derived the result: every episode re-scored against regenerated universes with 0 mismatches, every transcript matching its recorded fingerprint.",
           "Two of the three planned models left under the frozen rules before any test episode, one on privacy and one on cost, and the replacements failed on cost or context. GLM-5.3 Flash joined, lost its server mid-run, and was stopped on the only other one, where it waited on rate limits about 91% of the time. One model is fully reported: GPT-6 Luna.",
         ],
       },
@@ -778,6 +884,7 @@ const systemList: System[] = [
         },
         paragraphs: [
           "It found the thought experiment’s pairing in 138 of 140 episodes and applied the equivalence in every answer it gave: 132 of 139 answers were v*, and the other 7 the same ratio inverted. It queried the consequence class in the field in 2. So it was right on the I members and wrong on every D member, and beating 1/2 was not detected.",
+          "It was not idle. Of its 5,454 experiments, 75.5% re-measured the three ordinary kinds in the field, whose law the textbook already states, and one used the carriage. In 121 of 140 episodes its visible text reads the clock rate straight off the textbook’s factor n. Afterwards it said that all kinds respond alike in all 138 episodes that gave a verdict, including the 69 in which one kind does not.",
         ],
       },
       {
@@ -801,14 +908,14 @@ const systemList: System[] = [
           caption: "E-a, the exact one-sided sign test: p = 1.7 × 10⁻²¹. Locked before any of its episodes.",
         },
         paragraphs: [
-          "The extension hands over the pairing and asks the one question the leap depends on. The model ran the decisive experiment every time and read it correctly in all but one episode. So it can check; end to end, it does not think to.",
+          "The extension hands over the pairing and asks the one question the leap depends on. The model ran the decisive experiment every time and read it correctly in all but one episode. It differs from the end-to-end arm in three ways: it hands over the pairing, it names the comparison, and it scores a verdict rather than the clock readout. So the model can make the comparison when told which one to make; whether making it would correct the readout was not tested. The extension was added after the end-to-end scores had been read, and locked before any of its episodes.",
         ],
       },
       {
         heading: "Where the leap breaks",
         paragraphs: [
-          "The 1907 step splits into typed stages: finding the pairing (computation), checking that it holds for every kind of matter (inference), adopting it (prior) and applying it (computation). GPT-6 Luna finds the pairing, can run the check when asked, and adopts and applies the equivalence whenever it answers. It almost never thinks of the check: 1.4%.",
-          "The failure is therefore neither a failure to imagine nor a failure to compute. It is a failure to ask, before leaping, the one question the leap depends on. Its prior favours the equivalence; what it lacks is the check that makes leaping warranted. In universes where the equivalence is sometimes false, that is the difference between Einstein and a lucky guess.",
+          "The 1907 step splits into typed stages: finding the pairing (computation), checking that it holds for every kind of matter (inference), adopting it (prior) and applying it (computation). GPT-6 Luna finds the pairing, runs the check when told what to compare, and adopts and applies the equivalence whenever it answers. It almost never makes the check unprompted: 1.4%.",
+          "So the failure is not a failure to compute, and not an inability to run the check. It is at least a failure to ask, before leaping, the one question the leap depends on. Two other readings fit the same counts: the setup is recognisably relativistic, so the model may recall a prior in which every kind of matter falls alike; or having the data may not be enough: in the one end-to-end episode where it checked a decoy, it saw one kind fall about 22% less far and still extended the equivalence. A textbook that hides the factor n, and an asked check followed by the readout, would separate them.",
         ],
       },
       {
@@ -825,7 +932,7 @@ const systemList: System[] = [
         },
         paragraphs: [
           "The thesis arm asked whether a 3,315,508-parameter transformer, meta-trained by PPO across two training families, learns a check-then-use rule. Nine runs trained for 9,000,576 episodes and 16.2 hours on a laptop CPU. After episode 0, no run made a single correct jump at any evaluation: the agent stayed on the free “default” answer, which earns 1/2.",
-          "The shallow comparator did learn and transfer: a conditional logit that scores candidate frames by one shared linear function reached cross-family BA 1.000 in three of four directions. The RL arm is dead as designed — a statement about this interface and this compute, not about RL.",
+          "The shallow comparator did learn and transfer: a conditional logit that scores candidate frames by one shared linear function reached cross-family BA 1.000 in three of four directions, so the preregistered RL-minus-comparator contrast could not have favoured RL there even if PPO had learned. By its preregistered kill rule the RL arm stopped here: a statement about this interface and this compute, not about RL.",
         ],
       },
       {
@@ -852,7 +959,7 @@ const systemList: System[] = [
       {
         heading: "What this does not show",
         paragraphs: [
-          "One fully reported model, and a cheap one: nothing here is a statement about “LLMs”. One universe family and one readout. The asked check names the comparison — exactly the hint whose effect it measures, but a strong one; weaker prompts were not run. One sample per universe, at the vendor’s default sampling. The RL result is a negative at laptop compute, with one architecture and one interface.",
+          "One fully reported model, and a cheap one: nothing here is a statement about “LLMs”. One universe family and one readout. The setup is recognisable: the kinematics are special relativity’s and the field law is a uniformly accelerated (Rindler) chart, so “finds the pairing” and “adopts the equivalence” may be recall, not imagination; matched pairs keep recognition from raising the score. The asked check names the comparison, was added after the end-to-end scores were read, and scores a verdict; weaker prompts were not run. The preregistration is self-held, and there is no human baseline. One sample per universe, at the vendor’s default sampling. The RL result is a negative at laptop compute, with one architecture and one interface.",
         ],
       },
     ],
@@ -1523,9 +1630,26 @@ const systemList: System[] = [
     homeLine: "A loop that logs “accepted, +3%” cannot tell you which 3%.",
     question: "When a system improves itself, can you tell a real gain from gaming its own verifier?",
     plain: {
-      line: "Catching AI that cheats its own tests.",
-      num: "40%",
-      cap: "of its “improvements” only gamed the test when the AI could see it. With no test at all, it was 7%.",
+      line: "When an AI improves itself, can you tell a real gain from gaming its own test?",
+      num: "39.6%",
+      cap: "of the self-edits accepted under a visible test only gamed that test. Under a held-out test, 0%. With no test at all, 6.9%.",
+    },
+    status: "Open source · 3 arms, 12 seeds, every proposal logged",
+    brief: {
+      question:
+        "When a model is scored by a judge it can see, “it got better” and “it learned to please the judge” look the same. Telling them apart needs a domain where correctness is decided by execution.",
+      built:
+        "A self-improvement loop for program synthesis. Every self-edit is a bounded change to one weight table, every proposal is logged with its visible and its held-out score, and one of three gates decides what is accepted: the visible examples, held-out examples, or nothing.",
+      found:
+        "With one visible example, 41.2% of “solves” fit by coincidence. Under the visible gate, 39.6% of accepted edits raised the visible score without raising the held-out one; under the held-out gate, none did. The ledger catches the gaming.",
+      limits:
+        "Whether the loop improves at all is unresolved: the headroom is +0.029 against a per-arm standard deviation of 0.048, which needs 43 seeds for 80% power, and 12 were run.",
+      figure: "hack-rate",
+      numbers: [
+        { value: "0%", label: "accepted edits that were gaming under the held-out gate" },
+        { value: "41.2%", label: "solves that fit by coincidence with one visible example" },
+        { value: "43 (ran 12)", label: "seeds needed to resolve the solve rate at 80% power", negative: true },
+      ],
     },
     no: "12 seeds cannot resolve whether it improves at all; even a gain the size of all the headroom would need 43.",
     homeFigure: {
@@ -2008,10 +2132,27 @@ const systemList: System[] = [
     homeLine: "Filing for recall does not find the structure imagination needs.",
     question: "Does where a memory is filed decide what it can recall, and what it can imagine?",
     plain: {
-      line: "How the brain’s “map cells” could organise memories.",
-      num: "<1",
-      vs: "point off",
-      cap: "My formula predicted recall on 156 new tests and was off by less than one percentage point on average, with no tuning.",
+      line: "Does where a memory is filed decide what it can recall, and what it can imagine?",
+      num: "0.009",
+      vs: "mean error",
+      cap: "A theory with zero fitted parameters predicted recall on 156 held-out runs it was never developed on. Every run within 0.05.",
+    },
+    status: "Pre-registered, two rounds · port of Vector-HaSH (Nature 2025)",
+    brief: {
+      question:
+        "Vector-HaSH stores memories the way the hippocampus is thought to: a fixed grid-cell scaffold of 3,600 addresses. The paper leaves one choice open, where each memory goes. loci measures what that choice decides.",
+      built:
+        "A theory of noisy recall with nothing fitted, frozen and hashed before it was tested; a filing rule derived from its error law (store where your recall points, then replay); and a test of whether the memory can construct combinations it never experienced.",
+      found:
+        "The theory predicted 156 held-out runs to a mean error of 0.009. The filing rule beats k-means by 0.05–0.15. But filing for recall does not find the structure imagination needs: it constructs 0.24–0.31 of the unseen combinations, against 0.95–1.00 when filed by the true factors.",
+      limits:
+        "A study of how scaffold memories work and fail, not a better memory: kNN over the stored patterns recalls everything. The rule needs more state than the memory holds, and 2 of 13 pre-registered criteria failed.",
+      figure: "oos",
+      numbers: [
+        { value: "0.009", label: "mean error over 156 held-out runs, zero fitted parameters" },
+        { value: "11 of 13", label: "pre-registered criteria passed as registered" },
+        { value: "0.24–0.31", label: "unseen combinations constructed when filed for recall", negative: true },
+      ],
     },
     no: "Filed for recall, it constructs 0.24–0.31 of the combinations it never saw. Filed by the true factors, 0.95–1.00.",
     homeFigure: {
@@ -2376,30 +2517,46 @@ export const asides: Aside[] = [
 ];
 
 /**
- * gedanken is withheld until its repository is public. Every number on this
- * site is one someone could check, and a reader cannot check a private
- * repository. While this is false nothing of it reaches out/: no row, no
- * case page, no ledger entry, no fact. Flip it the day
- * github.com/zaineli/gedanken is public.
+ * gedanken is on the site (round 26), its repository not yet: the page says
+ * the code, the preregistration and every transcript go public with the
+ * preprint, and links nothing it cannot back. Flip GEDANKEN_REPO_PUBLIC the
+ * day github.com/zaineli/gedanken is public; the page then links the code.
  */
-export const GEDANKEN_PUBLIC = false;
+export const GEDANKEN_PUBLIC = true;
+export const GEDANKEN_REPO_PUBLIC = false;
 
 /**
- * Page order: the numbers that held first, then the two that said no, so the
- * first red a reader meets is not the first thing under the thesis. Once
- * public, gedanken leads: its number held (the asked check) and its turn is
- * the failure. reverie — the RL thesis's own first attempt — stands under the
- * portrait. The case-page ring follows the same order.
+ * Round 26: three selected works on the home page, one per clause of the
+ * opening line's argument: gedanken (does it choose the test?), whetstone
+ * (is the test it passes the real one?) and loci (a theory tested before
+ * the measurement). The rest keep their write-ups and move under the rows.
  */
+export const FEATURED: SystemSlug[] = ["gedanken", "whetstone", "loci"];
+
+/** Every system with a page. The said-no ledger and the counts read all of them. */
 const ORDER: SystemSlug[] = [
   ...(GEDANKEN_PUBLIC ? (["gedanken"] as const) : []),
-  "engram",
-  "loci",
   "whetstone",
+  "loci",
+  "engram",
   "spindle",
   "reverie",
 ];
-export const systems: System[] = ORDER.map((slug) => systemList.find((s) => s.slug === slug)!);
+export const systems: System[] = ORDER.map((slug) => {
+  const s = systemList.find((x) => x.slug === slug)!;
+  return slug === "gedanken" ? { ...s, repoPublic: GEDANKEN_REPO_PUBLIC } : s;
+});
+
+/** The home page's selected work, in FEATURED order. */
+export const featured: System[] = FEATURED.map((slug) => systems.find((s) => s.slug === slug)).filter(
+  (s): s is System => Boolean(s),
+);
+
+/** Built and written up, off the home page's rows. */
+export const archived: System[] = systems.filter((s) => !FEATURED.includes(s.slug));
+
+/** Where a system's long write-up lives: its own page, or /technical/ when the page is a brief. */
+export const techPath = (s: System): string => `/systems/${s.slug}/${s.brief ? "technical/" : ""}`;
 
 export const systemBySlug = (slug: string): System | undefined =>
   systems.find((s) => s.slug === slug);
@@ -2455,6 +2612,14 @@ export interface Publication {
   };
   bibtex?: string;
   links?: Link[];
+  /** How the hero's papers line counts it; "preprint" when omitted. */
+  tally?: string;
+  /** The knot its row shows (a FORMS key in /fig0.js); its slug when omitted. */
+  form?: string;
+  /** Printed under the actions when something the paper promises is not public yet. */
+  pending?: string;
+  /** Its row's second line on the home page: where it stands. */
+  rowNote?: string;
   /** This paper's own negative results, in the same shape systems[] ledgers use. */
   ledger?: LedgerEntry[];
   /** Case-page body, in the same heading/paragraph shape as SystemSection. */
@@ -2477,8 +2642,9 @@ const conoid: Publication = {
     year: "2026",
     // The PDF's own status line, word for word. Not "under review".
     status: "Preprint. Not peer-reviewed; under continued development.",
+    rowNote: "Preprint, 2026 · with Muhammad Ahmed Mohsin",
     plain: {
-      line: "Teams of AI agents that remember who is good at what.",
+      line: "Agent teams picked by track record, not by self-description.",
       with: "With Muhammad Ahmed Mohsin, Stanford University",
       num: "66%",
       vs: "vs 44%",
@@ -2790,7 +2956,49 @@ const sheafReputation: Publication = {
   ],
 };
 
-export const publications: Publication[] = [conoid, ...(PMR_PUBLIC ? [sheafReputation] : [])];
+/**
+ * gedanken's paper (round 27): written and audited, prepared for an AAAI-27
+ * workshop, not yet public. Its page carries the paper's own abstract, its
+ * figures and where it stands; no PDF until the preprint is posted, and its
+ * numbers are the study's, so the row shares gedanken's knot.
+ */
+const gedankenSystem = systemList.find((x) => x.slug === "gedanken")!;
+const gedankenPaper: Publication = {
+  slug: "imagining-without-checking",
+  title: "Imagining without Checking: A Preregistered, Runnable Test of Einstein’s 1907 Step",
+  shortTitle: "Imagining without Checking",
+  subtitle: "Does a language-model agent check an equivalence before extending it?",
+  authors: "Zain Ali",
+  authorList: [{ name: "Zain Ali", affiliation: "Alexein AI" }],
+  year: "2026",
+  status: "Written and audited; prepared for an AAAI-27 workshop, Montréal, February 2027",
+  tally: "for AAAI-27",
+  rowNote: "Prepared for an AAAI-27 workshop, February 2027",
+  form: "gedanken",
+  pending: "The PDF, code, preregistration and every transcript go public with the preprint.",
+  plain: {
+    line: "Does a language-model agent check an equivalence before extending it?",
+    with: "",
+    num: "0.993",
+    vs: "vs 0.479",
+    cap: "Balanced accuracy when asked to run the deciding check, against 0.479 end to end, where any agent that skips the check is capped at 0.5.",
+  },
+  // The paper's abstract (docs/paper/arxiv, 2026-10-17), its last sentence without the repository link.
+  abstract:
+    "Hassabis has proposed testing general intelligence by giving an AI system a 1911 knowledge cutoff and seeing whether it finds general relativity. That test cannot be run, because every model has read the answer. We build a runnable analogue of one step, Einstein’s 1907 equivalence argument, and ask a narrower question: does an agent check the premise of an equivalence before extending it? In procedurally generated universes with alien vocabulary, a textbook theory is exact on every experiment the agent can run, and the question asks for a clock-rate ratio in a regime no experiment reaches. The two universes of a test pair have byte-identical texts; in one, the equivalence fails for one kind of matter, which one available experiment reveals, so no policy that skips it can exceed balanced accuracy (BA) 1/2. In a preregistered study, GPT-6 Luna used its whole query budget in the median episode but ran that experiment in only 2 of 140 episodes, extended the equivalence in every answer (BA 0.479 [0.450, 0.500]), and afterwards asserted that all kinds respond alike in all 138 episodes that gave a verdict. Asked directly, in an extension added after these results and locked before its runs, it ran the experiment in 140 of 140 episodes and gave the right verdict in 139 (BA 0.993 [0.979, 1.000]). It can run the check when told which comparison to make, but almost never makes it unprompted; whether checking would correct its answers is untested. The setup is recognisably relativistic, so the equivalence may be recalled rather than invented. A 3.3M-parameter PPO agent never made a correct jump after its first evaluation. The instrument, the preregistration with its 29 amendments, every transcript and the scripts that re-derive every number are released with the paper.",
+  verdict: "It can run the check when told which comparison to make, but almost never makes it unprompted; whether checking would correct its answers is untested.",
+  readout: { value: "0.993", label: "balanced accuracy when asked to check" },
+  figures: gedankenSystem.figures.map((f) => ({ ...f })),
+  schematic: gedankenSystem.schematic,
+  media: { pdf: "", openHouse: "", video: "", poster: "", deck: [] },
+  links: [{ label: "The study, in brief", href: "/systems/gedanken/" }],
+};
+
+export const publications: Publication[] = [
+  ...(GEDANKEN_PUBLIC ? [gedankenPaper] : []),
+  conoid,
+  ...(PMR_PUBLIC ? [sheafReputation] : []),
+];
 
 /**
  * While PMR_PUBLIC is false the paper is still listed on the home page, by
@@ -2803,14 +3011,19 @@ export const PMR_LISTED = true;
 
 export interface Listing {
   title: string;
+  /** The row's name: short, like every other paper's. The full title is the page's. */
+  shortTitle: string;
   subtitle: string;
   status: string;
+  /** Where its work is written up, when it is. */
+  href?: string;
 }
 
-export const listings: Listing[] =
-  PMR_LISTED && !PMR_PUBLIC
-    ? [{ title: sheafReputation.title, subtitle: sheafReputation.subtitle, status: sheafReputation.status }]
-    : [];
+export const listings: Listing[] = [
+  ...(PMR_LISTED && !PMR_PUBLIC
+    ? [{ title: sheafReputation.title, shortTitle: "Sheaf Reputation", subtitle: sheafReputation.subtitle, status: sheafReputation.status }]
+    : []),
+];
 
 /** Total negative results on the site, derived from the ledgers so the numeral and the rows cannot disagree. */
 export const negativeCount =
@@ -2875,4 +3088,4 @@ export const priors: Prior[] = [
 ];
 
 export const metaDescription =
-  "Zain Ali, research engineer and VP Engineering & Product at Alexein AI, builds AI that remembers, imagines, and learns from its mistakes: open-source systems for agent memory, world models and planning, and auditable self-improvement.";
+  "Zain Ali, research engineer and VP Engineering & Product at Alexein AI. Systems built from scratch and tested against the control that could kill them: a runnable test of Einstein’s 1907 step for AI, a self-improvement loop audited for reward hacking, and a zero-fit theory of memory recall. At Alexein AI: RL agents with a memory architecture modelled on human cognition.";

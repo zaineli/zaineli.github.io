@@ -1,22 +1,14 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  SPEC_DECODE_HOLD,
-  publications,
-  shownLedger,
-  shownReadouts,
-  shownSections,
-  systemBySlug,
-  systems,
-} from "@/lib/content";
-import { slugify } from "@/lib/slug";
+import { SPEC_DECODE_HOLD, shownLedger, systemBySlug, systems, techPath, type System } from "@/lib/content";
 import { smart } from "@/lib/typo";
-import CaseSection from "@/components/case/CaseSection";
+import Figure from "@/components/fig/Figure";
+import LongWriteup from "@/components/case/LongWriteup";
 import PrevNext from "@/components/case/PrevNext";
+import { around } from "@/components/case/Ring";
 import Schematic from "@/components/Schematic";
 import Arrow from "@/components/ui/Arrow";
 import Num from "@/components/Num";
-import SpecLine from "@/components/SpecLine";
 
 export function generateStaticParams() {
   return systems.map((s) => ({ slug: s.slug }));
@@ -46,95 +38,126 @@ export async function generateMetadata(
   };
 }
 
-const ARTICLE_ID = "case";
+/** The page head every system page shares: the name, the question, where it stands, and where to go next. */
+function Head({ system, brief }: { system: System; brief: boolean }) {
+  const ledger = shownLedger(system.ledger);
+  const open = system.repoPublic !== false;
+  return (
+    <header className="page-head">
+      <h1>{system.name}</h1>
+      <p className="page-lede">{brief ? system.question : system.plain.line}</p>
+      {brief && system.status ? <p className="standing">{system.status}</p> : null}
+      <div className="actions">
+        {open ? (
+          <a className="btn btn-primary" href={system.repo} target="_blank" rel="noreferrer noopener">
+            Code on GitHub <Arrow />
+          </a>
+        ) : null}
+        {brief ? (
+          <a className={`btn${open ? "" : " btn-primary"}`} href={techPath(system)}>
+            The full technical write-up
+          </a>
+        ) : null}
+        {ledger.length ? (
+          <a className="btn" href={`/said-no/#no-${system.slug}`}>
+            What didn’t work · {ledger.length}
+          </a>
+        ) : null}
+      </div>
+      {open ? null : <p className="pending">Code, preregistration and every transcript go public with the preprint.</p>}
+    </header>
+  );
+}
+
+function Summary({ system }: { system: System }) {
+  return (
+    <div className="summary">
+      <p className="num">
+        {system.plain.num}
+        {system.plain.vs ? <span className="vs">{system.plain.vs}</span> : null}
+      </p>
+      <p className="cap">{system.plain.cap}</p>
+    </div>
+  );
+}
 
 export default async function SystemPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const system = systemBySlug(slug);
   if (!system) notFound();
+  const ring = around(`/systems/${system.slug}/`);
+  const b = system.brief;
 
-  const held = SPEC_DECODE_HOLD ? system.held : undefined;
-  const index = systems.findIndex((s) => s.slug === system.slug);
-  const chain = [
-    ...systems.map((s) => ({ href: `/systems/${s.slug}/`, name: s.name })),
-    ...publications.map((p) => ({ href: `/papers/${p.slug}/`, name: p.shortTitle })),
+  // Archived work: the long write-up on its own page, as it always was.
+  if (!b) {
+    return (
+      <article className="wrap case" id="case">
+        <p className="crumb">
+          <a href="/#work">← All work</a>
+        </p>
+        <Head system={system} brief={false} />
+        <Summary system={system} />
+        <LongWriteup system={system} />
+        {ring ? <PrevNext prev={ring.prev} next={ring.next} /> : null}
+      </article>
+    );
+  }
+
+  // Selected work: the brief. Four parts, three numbers, one figure, the mechanism.
+  const fig = [...system.figures, ...system.caseFigures].find((f) => f.id === b.figure);
+  const parts: [string, string, boolean?][] = [
+    ["The question", b.question],
+    ["What I built", b.built],
+    ["What I found", b.found],
+    ["What it does not show", b.limits, true],
   ];
-  const prev = chain[(index - 1 + chain.length) % chain.length];
-  const next = chain[(index + 1) % chain.length];
-
-  const figures = [...system.figures, ...system.caseFigures];
-  const ledger = shownLedger(system.ledger);
-  const sections = shownSections(system);
-
   return (
-    <article className="wrap case" id={ARTICLE_ID}>
+    <article className="wrap case brief" id="case">
       <p className="crumb">
         <a href={`/#${system.slug}`}>← All work</a>
       </p>
-      <header className="page-head">
-        <h1>{system.name}</h1>
-        <p className="page-lede">{system.plain.line}</p>
-        <div className="actions">
-          <a className="btn btn-primary" href={system.repo} target="_blank" rel="noreferrer noopener">
-            Code on GitHub <Arrow />
-          </a>
-          {ledger.length ? (
-            <a className="btn" href={`/said-no/#no-${system.slug}`}>
-              What didn’t work · {ledger.length}
-            </a>
-          ) : null}
-        </div>
-      </header>
+      <Head system={system} brief />
+      <Summary system={system} />
 
-      <div className="summary">
-        <p className="num">
-          {system.plain.num}
-          {system.plain.vs ? <span className="vs">{system.plain.vs}</span> : null}
-        </p>
-        <p className="cap">{system.plain.cap}</p>
-      </div>
-
-      <section className="cs tech" aria-label="The technical write-up">
-        <h2>The technical write-up</h2>
-        <div className="body">
-          <p className="lede">{smart(held?.abstract ?? system.abstract)}</p>
-          <dl className="facts">
-            {shownReadouts(system).map((r) => (
-              <div key={r.label} className={r.negative ? "neg" : undefined}>
-                <dt>
-                  <Num value={r.value} />
-                </dt>
-                <dd>{r.label}</dd>
-              </div>
-            ))}
-            <div>
-              <dt className="sm">
-                <SpecLine text={system.spec} />
-              </dt>
-              <dd>
-                {system.year} · {system.thread}
-              </dd>
-            </div>
-          </dl>
-        </div>
+      <section className="bf" aria-label="In brief">
+        {parts.map(([h, text, lim]) => (
+          <div key={h} className={lim ? "bf-part lim" : "bf-part"}>
+            <h2>{h}</h2>
+            <p>{smart(text)}</p>
+          </div>
+        ))}
       </section>
 
-      <Schematic schematic={system.schematic} label={system.name} />
+      <dl className="facts bf-nums">
+        {b.numbers.map((r) => (
+          <div key={r.label} className={r.negative ? "neg" : undefined}>
+            <dt>
+              <Num value={r.value} />
+            </dt>
+            <dd>{r.label}</dd>
+          </div>
+        ))}
+      </dl>
 
-      {sections.map((section) => {
-        const id = slugify(section.heading);
-        return (
-          <CaseSection
-            key={section.heading}
-            section={section}
-            own={system.name}
-            figures={figures.filter((f) => f.section === id)}
-            ledger={ledger.filter((e) => e.anchor === id)}
-          />
-        );
-      })}
+      {fig ? (
+        <section className="bf-fig" aria-label="The result, as a figure">
+          <h2>The result</h2>
+          <Figure spec={fig} className="cfig" />
+        </section>
+      ) : null}
 
-      <PrevNext prev={prev} next={next} />
+      <section className="bf-how" aria-label="How it works">
+        <h2>How it works</h2>
+        <Schematic schematic={system.schematic} label={system.name} />
+      </section>
+
+      <p className="bf-more">
+        <a className="go" href={techPath(system)}>
+          Every number, table and caveat: the full technical write-up <span aria-hidden="true">→</span>
+        </a>
+      </p>
+
+      {ring ? <PrevNext prev={ring.prev} next={ring.next} /> : null}
     </article>
   );
 }
