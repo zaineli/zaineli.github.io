@@ -102,11 +102,12 @@ const saidHtml = existsSync(saidPath) ? readFileSync(saidPath, "utf8") : "";
 if (!new RegExp(`>${negativeCount}</span>\\s*(<!-- -->)?\\s*things`).test(saidHtml)) {
   failures.push(`the count ${negativeCount} is not static on /said-no/`);
 }
-if (!new RegExp(`See all (<!-- -->)?${negativeCount}`).test(homeHtml)) {
+if (!new RegExp(`class="ledger"[^>]*><b>${negativeCount}</b>`).test(homeHtml)) {
   failures.push(`the home count ${negativeCount} is not static`);
 }
 for (const [path, html] of [[homePath, homeHtml], [saidPath, saidHtml]]) {
-  if (/<script\b/i.test(html)) failures.push(`${path} ships a <script> (strip-js did not run?)`);
+  // The one script a static page may carry is its own, marked data-keep (Fig. 0).
+  if (/<script\b(?![^>]*\bdata-keep\b)/i.test(html)) failures.push(`${path} ships a framework <script> (strip-js did not run?)`);
 }
 
 // 3. every deep link lands on something
