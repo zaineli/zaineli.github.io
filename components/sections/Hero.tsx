@@ -30,7 +30,7 @@ export default function Hero() {
         <div className="wrap hero-in">
           <div className="hero-copy">
             <p className="kicker">
-              Research engineer · {profile.role}, {profile.company}
+              Research engineer · {profile.role}, <a href={profile.companyUrl}>{profile.company}</a>
             </p>
             {/* the setup in grey, the claim in ink */}
             <h1 id="headline">

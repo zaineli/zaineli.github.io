@@ -254,6 +254,8 @@ export const profile = {
   wordmark: "zain ali",
   role: "VP Engineering & Product",
   company: "Alexein AI",
+  /** The company's site: linked from the company's name, and his employer in the structured data. */
+  companyUrl: "https://alexein.ai",
   location: "California, United States",
   email: "zali.bscs22seecs@seecs.edu.pk",
 
@@ -461,6 +463,8 @@ export interface Role {
   /** The home page's one line for this role, in plain words. */
   plain: string;
   glossLine?: string;
+  /** The company's site, linked from its name on the record. */
+  href?: string;
 }
 
 // Periods follow LinkedIn (Victreat Nov 2025 – May 2026, ImagineArt
@@ -479,8 +483,10 @@ export const experience: Role[] = [
       "Own the technical direction across the research and serving stack, from what gets modelled to what it costs to run.",
     ],
     outcomes: [],
-    // LinkedIn summary, verbatim. alexein.ai is not linked: its public page
-    // ("from AGI to ASI", unattributed testimonials) does not say this yet.
+    // The company's site, linked since its page was replaced on 2026-10-28
+    // (see bannedStrings in lib/facts.ts).
+    href: "https://alexein.ai",
+    // LinkedIn summary, verbatim.
     gloss: "Building the guess.",
     glossLine:
       "Agents that build a real model of the world, search through it, and get corrected by what actually happens.",

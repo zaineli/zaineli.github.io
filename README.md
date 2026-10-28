@@ -29,6 +29,7 @@ node scripts/og.mjs   # after a build: the social card, captured from the real h
 
 - `lib/content.ts` — every word and number on the site. `home` holds the copy only the home page prints (the opening sentence, each project's field and what its number counts, the ledger line, the about and contact lines); `interests`, systems (with their briefs), papers, experience and the ledger hold the rest. `FEATURED` picks the three selected works. `GEDANKEN_REPO_PUBLIC` links gedanken's code once its repository is public; `PMR_PUBLIC` keeps unreleased work out of the export entirely.
 - `lib/facts.ts` + `scripts/check-once.ts` — every fact on the home page appears exactly once; deep links resolve; banned and held strings appear nowhere.
+- `lib/structured.ts` + `components/JsonLd.tsx` — what search engines read: him as a Person (role, Alexein AI, profiles, photo) on the home page, each paper as a ScholarlyArticle with Google Scholar's `citation_*` tags, each write-up with him as author. `app/sitemap.ts` and `app/robots.ts` list every page the export builds.
 - `app/globals.css` — the design: tokens, the frames, header, the first frame, the work beside its close view, the belief, about, contact, write-up pages, figures, the schematic, the ledger.
 - `public/fig0.js` — Fig. 0; `public/vendor/three-0.160.0.module.min.js` — three.js r160 (MIT).
 - `scripts/qa.mjs` — what the design promises, checked in a real browser.

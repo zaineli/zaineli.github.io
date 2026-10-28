@@ -16,7 +16,7 @@ export default function Record() {
               src="/profile.webp"
               width={900}
               height={1015}
-              alt="Zain Ali standing in front of a chalkboard"
+              alt="Zain Ali, VP Engineering & Product at Alexein AI, standing in front of a chalkboard"
               loading="lazy"
               decoding="async"
               style={{ backgroundImage: `url(${portraitPlaceholder})` }}
@@ -30,7 +30,7 @@ export default function Record() {
                 <li key={r.company}>
                   <span className="when">{r.period}</span>
                   <span className="who">
-                    {r.company} <span>{r.title}</span>
+                    {r.href ? <a href={r.href}>{r.company}</a> : r.company} <span>{r.title}</span>
                   </span>
                   <span className="v">{i === 0 ? "" : r.outcomes[0]?.value}</span>
                 </li>

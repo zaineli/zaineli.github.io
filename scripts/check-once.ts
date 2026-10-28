@@ -158,7 +158,7 @@ for (const file of textFiles) {
 
 // 5. nothing is published that no page uses: every exported file outside
 // _next/ must be referenced by some page (or be site plumbing).
-const PLUMBING = /(^|\/)(CNAME|\.nojekyll|icon\.svg|opengraph-image\.png|404\.html|index\.html|index\.txt|[^/]+\.txt)$/;
+const PLUMBING = /(^|\/)(CNAME|\.nojekyll|icon\.svg|opengraph-image\.png|404\.html|index\.html|index\.txt|sitemap\.xml|[^/]+\.txt)$/;
 const pages = htmlFiles.map((f) => readFileSync(f, "utf8")).join("\n");
 for (const file of allFiles) {
   const rel = file.slice(OUT.length + 1);

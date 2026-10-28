@@ -9,6 +9,8 @@ import PrevNext from "@/components/case/PrevNext";
 import { around } from "@/components/case/Ring";
 import Schematic from "@/components/Schematic";
 import Arrow from "@/components/ui/Arrow";
+import JsonLd from "@/components/JsonLd";
+import { author, SITE_URL } from "@/lib/structured";
 
 /**
  * Static params come from `publications`, and nothing else builds this
@@ -39,6 +41,41 @@ export async function generateMetadata(
     alternates: { canonical: url },
     openGraph: { title, description, url, type: "article", images: up.openGraph?.images },
     twitter: { card: "summary_large_image", title, description, images: up.twitter?.images },
+    // Google Scholar's tags: the paper's title, its authors in order, its
+    // year, this page, and the PDF where there is one.
+    other: {
+      citation_title: paper.title,
+      citation_author: authorsOf(paper).map((a) => a.name),
+      ...(paper.year ? { citation_publication_date: paper.year } : {}),
+      citation_abstract_html_url: `${SITE_URL}${url}`,
+      ...(paper.media.pdf ? { citation_pdf_url: `${SITE_URL}${paper.media.pdf}` } : {}),
+    },
+  };
+}
+
+/** The paper's authors in order, with their affiliations where the PDF prints them. */
+const authorsOf = (paper: Publication) =>
+  paper.authorList ?? (paper.authors ?? "").split(", ").filter(Boolean).map((name) => ({ name, affiliation: "" }));
+
+/** The paper as search engines read it: him by the home page's @id, his co-authors by name. */
+function scholarly(paper: Publication) {
+  const url = `${SITE_URL}/papers/${paper.slug}/`;
+  return {
+    "@type": "ScholarlyArticle",
+    "@id": `${url}#paper`,
+    url,
+    name: paper.title,
+    headline: paper.shortTitle,
+    abstract: paper.abstract,
+    ...(paper.year ? { datePublished: paper.year } : {}),
+    creativeWorkStatus: paper.status,
+    author: authorsOf(paper).map(({ name, affiliation }) => ({
+      ...(name === author.name ? author : { "@type": "Person", name }),
+      ...(affiliation ? { affiliation: { "@type": "Organization", name: affiliation } } : {}),
+    })),
+    ...(paper.media.pdf
+      ? { encoding: { "@type": "MediaObject", contentUrl: `${SITE_URL}${paper.media.pdf}`, encodingFormat: "application/pdf" } }
+      : {}),
   };
 }
 
@@ -63,6 +100,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
 
   return (
     <article className="wrap case" id="case">
+      <JsonLd data={scholarly(paper)} />
       <p className="crumb">
         <a href="/#papers">← Papers</a>
       </p>

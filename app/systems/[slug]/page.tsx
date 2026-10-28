@@ -9,6 +9,8 @@ import { around } from "@/components/case/Ring";
 import Schematic from "@/components/Schematic";
 import Arrow from "@/components/ui/Arrow";
 import Num from "@/components/Num";
+import JsonLd from "@/components/JsonLd";
+import { author, SITE_URL } from "@/lib/structured";
 
 export function generateStaticParams() {
   return systems.map((s) => ({ slug: s.slug }));
@@ -38,12 +40,27 @@ export async function generateMetadata(
   };
 }
 
+/** The write-up as search engines read it, with him as its author; a held result stays held, as in the metadata. */
+function writeup(s: System) {
+  const held = SPEC_DECODE_HOLD ? s.held : undefined;
+  const url = `${SITE_URL}/systems/${s.slug}/`;
+  return {
+    "@type": "TechArticle",
+    "@id": `${url}#writeup`,
+    url,
+    headline: `${s.name} — ${held?.tagline ?? s.tagline}`,
+    description: held?.pitch ?? s.pitch,
+    author,
+  };
+}
+
 /** The page head every system page shares: the name, the question, where it stands, and where to go next. */
 function Head({ system, brief }: { system: System; brief: boolean }) {
   const ledger = shownLedger(system.ledger);
   const open = system.repoPublic !== false;
   return (
     <header className="page-head">
+      <JsonLd data={writeup(system)} />
       <h1>{system.name}</h1>
       <p className="page-lede">{brief ? system.question : system.plain.line}</p>
       {brief && system.status ? <p className="standing">{system.status}</p> : null}

@@ -5,6 +5,8 @@ import Record from "@/components/sections/Record";
 import Rules from "@/components/sections/Rules";
 import Interests from "@/components/sections/Interests";
 import Contact from "@/components/sections/Contact";
+import JsonLd from "@/components/JsonLd";
+import { profilePage } from "@/lib/structured";
 
 /**
  * Round 25, the ceramic: white, every section in its own frame. The first
@@ -17,6 +19,7 @@ import Contact from "@/components/sections/Contact";
 export default function Home() {
   return (
     <div className="home">
+      <JsonLd data={profilePage} />
       <Hero />
       <Record />
       <div className="panel show">

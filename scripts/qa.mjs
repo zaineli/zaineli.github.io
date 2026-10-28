@@ -274,9 +274,11 @@ for (const path of TECH) {
 }
 
 /* ---- 10c. the home page ships only its own script; the ledger none -- */
+/* (Its structured data, a JSON-LD block, is data a browser never runs, so
+   it isn't counted.) */
 {
   const home = await readFile(`${OUT}/index.html`, "utf8");
-  const scripts = home.match(/<script\b[^>]*>/gi) ?? [];
+  const scripts = (home.match(/<script\b[^>]*>/gi) ?? []).filter((s) => !/type="application\/ld\+json"/.test(s));
   if (scripts.length !== 2 || !/type="importmap"/.test(scripts[0]) || !/src="\/fig0\.js"/.test(scripts[1]))
     fail(`index.html: expected only the import map and /fig0.js, found ${scripts.join(" ")}`);
   const said = await readFile(`${OUT}/said-no/index.html`, "utf8");

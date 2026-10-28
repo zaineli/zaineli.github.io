@@ -412,6 +412,18 @@ a.row.here .row-num {
   color: var(--accent);
   border-color: var(--accent);
 }
+/* The company's name, where it links to the company's site (the first
+   frame's line and the record): underlined like the links under the work. */
+.kicker a,
+.roles .who a {
+  border-bottom: 1px solid var(--rule-2);
+  transition: border-color 0.2s, color 0.2s;
+}
+.kicker a:hover,
+.roles .who a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
 .also + .ledger {
   margin-top: 14px;
 }

@@ -71,7 +71,10 @@ export const bannedStrings: string[] = [
   "Stanford collaborators",
   "Internet of Evolving Agents",
   "Internet of Agents",
-  "alexein.ai",
+  // "alexein.ai" was banned while its public page said "from AGI to ASI"
+  // beside unattributed testimonials. That page was replaced on 2026-10-28
+  // (a memory layer for AI agents, with benchmarks and use cases), and the
+  // owner asked for the site to link it, so the ban is lifted.
   "33K identities",
   "SynapseGraph",
   "distributed-ml-platform",
