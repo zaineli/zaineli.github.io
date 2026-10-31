@@ -18,7 +18,14 @@ export const person = {
   url: `${SITE_URL}/`,
   image: `${SITE_URL}/profile.webp`,
   jobTitle: profile.role,
-  worksFor: { "@type": "Organization", name: profile.company, url: profile.companyUrl },
+  // The company by the @id alexein.ai gives it in its own structured data, with the same profiles.
+  worksFor: {
+    "@type": "Organization",
+    "@id": `${profile.companyUrl}/#organization`,
+    name: profile.company,
+    url: profile.companyUrl,
+    sameAs: profile.companyProfiles,
+  },
   alumniOf: { "@type": "CollegeOrUniversity", name: education.school },
   knowsAbout: interests.map((i) => i.name),
   sameAs: links.filter((l) => l.external).map((l) => l.href),

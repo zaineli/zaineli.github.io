@@ -256,6 +256,8 @@ export const profile = {
   company: "Alexein AI",
   /** The company's site: linked from the company's name, and his employer in the structured data. */
   companyUrl: "https://alexein.ai",
+  /** The company's own profiles elsewhere, so search engines join his page, the company and its LinkedIn page up. */
+  companyProfiles: ["https://www.linkedin.com/company/alexein-ai", "https://github.com/Alexein-AI"],
   location: "California, United States",
   email: "zali.bscs22seecs@seecs.edu.pk",
 
