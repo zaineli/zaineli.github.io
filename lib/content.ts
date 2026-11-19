@@ -257,7 +257,7 @@ export const profile = {
   /** The company's site: linked from the company's name, and his employer in the structured data. */
   companyUrl: "https://alexein.ai",
   /** The company's own profiles elsewhere, so search engines join his page, the company and its LinkedIn page up. */
-  companyProfiles: ["https://www.linkedin.com/company/alexein-ai", "https://github.com/Alexein-AI"],
+  companyProfiles: ["https://www.linkedin.com/company/alexein-ai", "https://github.com/Alexein-AI", "https://x.com/alexeinai"],
   location: "California, United States",
   email: "zali.bscs22seecs@seecs.edu.pk",
 
@@ -3095,5 +3095,11 @@ export const priors: Prior[] = [
   { label: "National Science Talent Contest", rank: "qualifier" },
 ];
 
+/**
+ * The search result's two lines: the title (who he is and where, the same
+ * line his profiles and alexein.ai use) and this, at most 160 characters so
+ * a search page shows all of it. scripts/check-once.ts holds both to that.
+ */
+export const pageTitle = `${profile.name}, ${profile.role} at ${profile.company}`;
 export const metaDescription =
-  "Zain Ali, research engineer and VP Engineering & Product at Alexein AI. Systems built from scratch and tested against the control that could kill them: a runnable test of Einstein’s 1907 step for AI, a self-improvement loop audited for reward hacking, and a zero-fit theory of memory recall. At Alexein AI: RL agents with a memory architecture modelled on human cognition.";
+  "Zain Ali, VP Engineering & Product at Alexein AI, which builds memory for AI agents. A research engineer in RL and world models who publishes failures too.";

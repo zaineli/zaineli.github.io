@@ -15,7 +15,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { allowlist, bannedPatterns, bannedStrings, heldStrings, homeFacts } from "../lib/facts.ts";
-import { negativeCount, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems, techPath } from "../lib/content.ts";
+import { metaDescription, negativeCount, pageTitle, publications, SPEC_DECODE_HOLD, shownLedger, shownSections, systems, techPath } from "../lib/content.ts";
 import { slugify } from "../lib/slug.ts";
 
 const OUT = "out";
@@ -166,6 +166,44 @@ for (const file of allFiles) {
   if (!pages.includes(`/${rel}`)) failures.push(`out/${rel} is published but no page references it`);
 }
 
+// 6. what a search engine reads: every page names its one canonical address
+// (its own), has a description and one h1, and its structured data parses
+// and names him by the one @id. The home page's title is the line he uses
+// everywhere, and its description fits on a search page (160 characters).
+// The 404 page carries no canonical, so it can't pass as the home page.
+const SITE = "https://zainn.me";
+const PERSON = `${SITE}/#person`;
+for (const file of htmlFiles) {
+  const rel = file.slice(OUT.length);
+  const html = readFileSync(file, "utf8");
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]*)"/g)].map((m) => m[1]);
+  if (/^\/404(\.html|\/index\.html)$/.test(rel)) {
+    if (canonicals.length) failures.push(`${rel}: the 404 page has a canonical (${canonicals[0]})`);
+    continue;
+  }
+  const want = `${SITE}${rel.replace(/index\.html$/, "")}`;
+  if (canonicals.length !== 1 || canonicals[0] !== want) failures.push(`${rel}: canonical ${canonicals.join(", ") || "missing"} (want ${want})`);
+  if (!/<meta name="description" content="[^"]+"/.test(html)) failures.push(`${rel}: no meta description`);
+  const h1s = (html.match(/<h1\b/g) ?? []).length;
+  if (h1s !== 1) failures.push(`${rel}: ${h1s} <h1> (want 1)`);
+  for (const [, body] of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+    try {
+      JSON.parse(body);
+    } catch {
+      failures.push(`${rel}: a JSON-LD block does not parse`);
+      continue;
+    }
+    for (const [, id] of body.matchAll(/"@id":"([^"]*#person[^"]*)"/g)) if (id !== PERSON) failures.push(`${rel}: Person @id ${id} (want ${PERSON})`);
+  }
+}
+{
+  const title = decode(homeHtml.match(/<title>([^<]*)<\/title>/)?.[1] ?? "");
+  const description = decode(homeHtml.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "");
+  if (title !== pageTitle) failures.push(`index.html: title "${title}" (want "${pageTitle}")`);
+  if (description !== metaDescription) failures.push(`index.html: meta description is not metaDescription`);
+  if (metaDescription.length > 160) failures.push(`metaDescription is ${metaDescription.length} characters (a search page shows 160)`);
+}
+
 if (failures.length) {
   console.error(`\ncheck-once: ${failures.length} problem(s) in the built site\n`);
   for (const f of failures) console.error(`  · ${f}`);
@@ -173,5 +211,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  `check-once: ${homeFacts.length} facts, each exactly once; every deep link resolves; ${textFiles.length} pages and payloads free of held and banned strings; every published file is used.`,
+  `check-once: ${homeFacts.length} facts, each exactly once; every deep link resolves; ${textFiles.length} pages and payloads free of held and banned strings; every published file is used; every page's search tags hold.`,
 );

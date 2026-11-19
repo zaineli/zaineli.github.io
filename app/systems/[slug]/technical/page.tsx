@@ -1,8 +1,10 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import { shownLedger, systemBySlug, systems } from "@/lib/content";
+import { shownLedger, systemBySlug, systems, type System } from "@/lib/content";
 import LongWriteup from "@/components/case/LongWriteup";
 import Arrow from "@/components/ui/Arrow";
+import JsonLd from "@/components/JsonLd";
+import { author, SITE_URL } from "@/lib/structured";
 
 /** Only a system whose page is a brief has a technical page; the others print the write-up on their own page. */
 export function generateStaticParams() {
@@ -29,6 +31,20 @@ export async function generateMetadata(
   };
 }
 
+/** The long write-up as search engines read it: him as its author, and part of the brief's write-up. */
+function technical(s: System) {
+  const url = `${SITE_URL}/systems/${s.slug}/technical/`;
+  return {
+    "@type": "TechArticle",
+    "@id": `${url}#writeup`,
+    url,
+    headline: `${s.name}, the technical write-up`,
+    description: s.pitch,
+    isPartOf: { "@id": `${SITE_URL}/systems/${s.slug}/#writeup` },
+    author,
+  };
+}
+
 export default async function TechnicalPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const system = systemBySlug(slug);
@@ -41,6 +57,7 @@ export default async function TechnicalPage({ params }: { params: Promise<{ slug
         <a href={`/systems/${system.slug}/`}>← {system.name}, in brief</a>
       </p>
       <header className="page-head">
+        <JsonLd data={technical(system)} />
         <h1>{system.name}</h1>
         <p className="page-lede">{system.tagline}. The full write-up: every number, table and caveat.</p>
         <div className="actions">

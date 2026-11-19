@@ -5,8 +5,9 @@ import Record from "@/components/sections/Record";
 import Rules from "@/components/sections/Rules";
 import Interests from "@/components/sections/Interests";
 import Contact from "@/components/sections/Contact";
+import Writing from "@/components/sections/Writing";
 import JsonLd from "@/components/JsonLd";
-import { profilePage } from "@/lib/structured";
+import { homeGraph } from "@/lib/structured";
 
 /**
  * Round 25, the ceramic: white, every section in its own frame. The first
@@ -19,7 +20,7 @@ import { profilePage } from "@/lib/structured";
 export default function Home() {
   return (
     <div className="home">
-      <JsonLd data={profilePage} />
+      <JsonLd data={homeGraph} />
       <Hero />
       <Record />
       <div className="panel show">
@@ -27,6 +28,7 @@ export default function Home() {
           <div className="show-text">
             <Projects />
             <Papers />
+            <Writing />
           </div>
           <div className="show-side">
             <div className="stage" data-stage="work" aria-hidden="true">

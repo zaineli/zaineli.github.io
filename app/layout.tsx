@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { metaDescription, profile } from "@/lib/content";
+import { metaDescription, pageTitle, profile } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -28,7 +28,10 @@ const backstop = localFont({
   adjustFontFallback: false,
 });
 
-const title = `${profile.name} · ${profile.role}, ${profile.company}`;
+// "Zain Ali, VP Engineering & Product at Alexein AI": word for word the line
+// he uses on alexein.ai and his profiles, so search engines see one person
+// with one title wherever they find him.
+const title = pageTitle;
 
 // og:image, og:image:alt and twitter:image come from the file convention
 // (app/opengraph-image.png + app/opengraph-image.alt.txt).

@@ -10,6 +10,7 @@
  * ------------------------------------------------------------------ */
 
 import { education, featured, home, interests, profile, publications } from "./content.ts";
+import { writing } from "./writing.ts";
 
 const facts: string[] = [];
 
@@ -30,6 +31,9 @@ for (const p of publications) {
   if (!p.plain) continue;
   facts.push(p.plain.line, p.plain.num);
 }
+
+// Writing at Alexein: each post's title
+for (const w of writing) facts.push(w.title);
 
 // Interests: each position once
 facts.push(home.interestsLine);

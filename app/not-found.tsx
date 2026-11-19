@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+
+/**
+ * A missing page is no copy of the home page: its own title, and no
+ * canonical (the layout's would point it at "/"). Next marks it noindex.
+ */
+export const metadata: Metadata = {
+  title: "Not found",
+  alternates: { canonical: null },
+};
+
 export default function NotFound() {
   return (
     <section className="wrap lost">

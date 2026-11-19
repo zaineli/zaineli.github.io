@@ -446,6 +446,11 @@ a.row.here .row-num {
 #papers .go {
   margin-top: 24px;
 }
+/* writing at Alexein: the outbound arrow stays on the line it closes */
+#writing .counts .ico {
+  display: inline-block;
+  margin-left: 3px;
+}
 
 /* ---------- what he believes, as large as the opening ---------- */
 .belief .wrap {
